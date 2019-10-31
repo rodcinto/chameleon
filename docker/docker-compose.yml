@@ -1,0 +1,47 @@
+version: '3.5'
+
+services:
+  web:
+    container_name: chameleon_web
+    image: nginx:latest
+    ports:
+      - "80:80"
+    volumes:
+      - ../:/var/www/project
+      - ./nginx/site.conf:/etc/nginx/conf.d/site.conf
+    links:
+      - php
+      - db
+    networks:
+      - wordbook-network
+
+  php:
+    container_name: chameleon_php
+    image: php:7-fpm
+    volumes:
+      - ../:/var/www/project
+    networks:
+      - wordbook-network
+
+  db:
+    container_name: chameleon_db
+    image: mysql:5.6
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+    volumes:
+      - ./db_data5.6:/var/lib/mysql
+    networks:
+      - wordbook-network
+
+  adminer:
+    container_name: chameleon_adminer
+    image: adminer
+    restart: always
+    ports:
+      - "8080:8080"
+    networks:
+      - wordbook-network
+
+networks:
+    wordbook-network:
+        driver: bridge
