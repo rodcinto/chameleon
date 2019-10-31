@@ -13,7 +13,7 @@ services:
       - php
       - db
     networks:
-      - wordbook-network
+      - chameleon-network
 
   php:
     container_name: chameleon_php
@@ -21,7 +21,7 @@ services:
     volumes:
       - ../:/var/www/project
     networks:
-      - wordbook-network
+      - chameleon-network
 
   db:
     container_name: chameleon_db
@@ -31,7 +31,7 @@ services:
     volumes:
       - ./db_data5.6:/var/lib/mysql
     networks:
-      - wordbook-network
+      - chameleon-network
 
   adminer:
     container_name: chameleon_adminer
@@ -40,8 +40,8 @@ services:
     ports:
       - "8080:8080"
     networks:
-      - wordbook-network
+      - chameleon-network
 
 networks:
-    wordbook-network:
+    chameleon-network:
         driver: bridge
