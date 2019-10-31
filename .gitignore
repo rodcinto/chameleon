@@ -6,6 +6,14 @@
 !app/cache/.gitkeep
 !app/logs/.gitkeep
 
+###> symfony4/framework-bundle ###
+/.env.local
+/.env.local.php
+/.env.*.local
+/public/bundles/
+/var/
+###< symfony4/framework-bundle ###
+
 # Email spool folder
 /app/spool/*
 
