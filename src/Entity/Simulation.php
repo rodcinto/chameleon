@@ -54,6 +54,11 @@ class Simulation
     /**
      * @ORM\Column(type="integer", nullable=true)
      */
+    private $response_code;
+
+    /**
+     * @ORM\Column(type="integer", nullable=true)
+     */
     private $response_delay;
 
     /**
@@ -170,6 +175,18 @@ class Simulation
         return $this;
     }
 
+    public function getResponseCode(): ?int
+    {
+        return $this->response_code;
+    }
+
+    public function setResponseCode(?int $response_code): self
+    {
+        $this->response_code = $response_code;
+
+        return $this;
+    }
+
     public function getResponseDelay(): ?int
     {
         return $this->response_delay;
@@ -211,7 +228,7 @@ class Simulation
         return $this->active;
     }
 
-    public function setActive(bool $sctive): self
+    public function setActive(bool $active): self
     {
         $this->active = $active;
 
