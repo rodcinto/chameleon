@@ -1,3 +1,12 @@
-#index:
-#    path: /
-#    controller: App\Controller\DefaultController::index
+index:
+   path: /
+   controller: App\Controller\DefaultController::index
+
+api:
+  path: /api/{category?}/{token}
+  controller: App\Controller\ApiController::index
+  defaults:
+    category: ''
+    token: ''
+  requirements:
+    token: .*
