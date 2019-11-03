@@ -3,14 +3,30 @@
 namespace App\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
+use App\Service\SimulationManager;
 
 class ApiController extends AbstractController
 {
-    public function index()
+    /**
+     * @var SimulationManager
+     */
+    private $simulationManager;
+
+    /**
+     * Constructor.
+     *
+     * @param SimulationManager $simulationManager
+     */
+    public function __construct(SimulationManager $simulationManager)
     {
-        return $this->json([
-            'message' => 'This is the API controller',
-            'path' => 'src/Controller/ApiController.php',
-        ]);
+        $this->simulationManager = $simulationManager;
+    }
+
+    public function index(Request $request, string $category, string $token)
+    {
+        $this->simulationManager->createRequestCriteria($request, $category, $token);
+
+        return $this->simulationManager->buildResponse();
     }
 }

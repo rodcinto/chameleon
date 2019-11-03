@@ -19,32 +19,24 @@ class SimulationRepository extends ServiceEntityRepository
         parent::__construct($registry, Simulation::class);
     }
 
-    // /**
-    //  * @return Simulation[] Returns an array of Simulation objects
-    //  */
-    /*
-    public function findByExampleField($value)
+    /**
+     * Search the simulation with Request that satisfies the criteria.
+     *
+     * @param array $criteria
+     * @return array
+     */
+    public function findRequestBy(array $criteria)
     {
-        return $this->createQueryBuilder('s')
-            ->andWhere('s.exampleField = :val')
-            ->setParameter('val', $value)
-            ->orderBy('s.id', 'ASC')
-            ->setMaxResults(10)
-            ->getQuery()
-            ->getResult()
-        ;
-    }
-    */
+        //@todo Where should I put the logic of content proximity?
+        $queryBuilder = $this->createQueryBuilder('s');
+        foreach ($criteria as $field => $value) {
+            $queryBuilder->andWhere(sprintf('s.%s = :val_%s', $field, $field))
+                ->setParameter('val_' . $field, $value);
+        }
 
-    /*
-    public function findOneBySomeField($value): ?Simulation
-    {
-        return $this->createQueryBuilder('s')
-            ->andWhere('s.exampleField = :val')
-            ->setParameter('val', $value)
+        return $queryBuilder
+            ->setMaxResults(1)
             ->getQuery()
-            ->getOneOrNullResult()
-        ;
+            ->getResult();
     }
-    */
 }
