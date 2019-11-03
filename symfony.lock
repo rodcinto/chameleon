@@ -117,6 +117,9 @@
     "psr/log": {
         "version": "1.1.1"
     },
+    "symfony/browser-kit": {
+        "version": "v4.3.6"
+    },
     "symfony/cache": {
         "version": "v4.3.5"
     },
@@ -139,6 +142,9 @@
             "config/bootstrap.php"
         ]
     },
+    "symfony/css-selector": {
+        "version": "v4.3.6"
+    },
     "symfony/debug": {
         "version": "v4.3.5"
     },
@@ -146,6 +152,9 @@
         "version": "v4.3.5"
     },
     "symfony/doctrine-bridge": {
+        "version": "v4.3.6"
+    },
+    "symfony/dom-crawler": {
         "version": "v4.3.6"
     },
     "symfony/dotenv": {
