@@ -31,7 +31,8 @@ services:
     volumes:
       - ./db_data5.6:/var/lib/mysql
     networks:
-      - chameleon-network
+      chameleon-network:
+        ipv4_address: 172.19.0.15
 
   adminer:
     container_name: chameleon_adminer
