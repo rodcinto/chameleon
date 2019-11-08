@@ -3,10 +3,15 @@
     <head>
         <meta charset="UTF-8">
         <title>{% block title %}Welcome!{% endblock %}</title>
+        <link href="{{ asset('/build/app.css') }}" rel="stylesheet"/>
         {% block stylesheets %}{% endblock %}
     </head>
     <body>
+        hello
         {% block body %}{% endblock %}
+
+        <script src="{{ asset('/build/runtime.js') }}"></script>
+        <script src="{{ asset('/build/vendors~app.js') }}"></script>
         {% block javascripts %}{% endblock %}
     </body>
 </html>
