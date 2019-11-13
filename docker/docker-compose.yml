@@ -7,7 +7,7 @@ services:
     ports:
       - "80:80"
     volumes:
-      - ../:/var/www/project
+      - ../:/var/www/project:delegated
       - ./nginx/site.conf:/etc/nginx/conf.d/site.conf
     links:
       - php
@@ -17,9 +17,9 @@ services:
 
   php:
     container_name: chameleon_php
-    image: php:7-fpm
+    build: ./php
     volumes:
-      - ../:/var/www/project
+      - ../:/var/www/project:delegated
     networks:
       - chameleon-network
 
