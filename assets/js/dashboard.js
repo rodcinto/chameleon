@@ -14,11 +14,12 @@ var infScroll = new InfiniteScroll('#forms-content', {
     debug: false,
     hideNav: '.pagination'
 });
-infScroll.on( 'append', function( event, response, path, items ) {
+infScroll.on( 'append', ( event, response, path, items ) => {
     $('.preloader-new-content').hide();
 });
 
-$(window).on('scroll', function() {
+$(window).on('scroll', () => {
+    // @TODO This should be on last loaded time, not last saved ID.
     if (0 === $(window).scrollTop()) {
         $('.preloader-new-content').show();
 
@@ -50,7 +51,7 @@ window.simulationSubmit = function() {
         method: 'post',
         dataType: 'json',
         data: data
-    }).done(function(data) {
-        console.log(data);
+    }).done((data) => {
+        console.log('Saved data response', data);
     });
 }
