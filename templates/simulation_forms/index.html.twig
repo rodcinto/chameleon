@@ -1,5 +1,5 @@
 {% for formInfo in forms %}
-    <div class="form-group simulation-form-{{ formInfo.simulation_id }}">
+    <div class="form-group simulation-form-{{ formInfo.simulation_id }}" data-simulationid="{{ formInfo.simulation_id }}">
     {{ form_start(formInfo.form, {'attr': {'onsubmit': 'return simulationSubmit();'}}) }}
         <div class="form-row mb-4">
             <div class="col">
