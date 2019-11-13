@@ -5,6 +5,7 @@ namespace App\Repository;
 use App\Entity\Simulation;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Common\Persistence\ManagerRegistry;
+use Doctrine\ORM\Tools\Pagination\Paginator;
 
 /**
  * @method Simulation|null find($id, $lockMode = null, $lockVersion = null)
@@ -14,6 +15,8 @@ use Doctrine\Common\Persistence\ManagerRegistry;
  */
 class SimulationRepository extends ServiceEntityRepository
 {
+    const MAX_RESULTS = 2;
+
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Simulation::class);
@@ -38,5 +41,59 @@ class SimulationRepository extends ServiceEntityRepository
             ->setMaxResults(1)
             ->getQuery()
             ->getResult();
+    }
+
+    /**
+     * Find only fresh.
+     *
+     * @param integer $id
+     * @return void
+     */
+    public function findFresh(int $id)
+    {
+        return $this->createQueryBuilder('s')
+            ->andWhere('s.id > :val')
+            ->setParameter('val', $id)
+            ->orderBy('s.id', 'DESC')
+            ->setMaxResults(self::MAX_RESULTS)
+            ->getQuery()
+            ->getResult()
+        ;
+    }
+
+    /**
+     * Find all.
+     *
+     * @param integer $currentPage
+     * @return void
+     */
+    public function findAll(int $currentPage = 1)
+    {
+        $query = $this->createQueryBuilder('s')
+            ->orderBy('s.created', 'DESC')
+            ->getQuery();
+
+        $paginatedResult = $this->paginate($query, $currentPage, self::MAX_RESULTS);
+
+        return $paginatedResult;
+    }
+
+    /**
+     * Paginate.
+     *
+     * @param \Doctrine\ORM\Query $query
+     * @param integer $page
+     * @param integer $limit
+     * @return \Doctrine\ORM\Tools\Pagination\Paginator
+     */
+    private function paginate(\Doctrine\ORM\Query $query, int $page, int $limit = 5)
+    {
+        $paginator = new Paginator($query);
+
+        $paginator->getQuery($query)
+            ->setFirstResult($limit * ($page - 1))
+            ->setMaxResults($limit);
+
+        return $paginator;
     }
 }

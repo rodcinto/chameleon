@@ -1,0 +1,85 @@
+{% for formInfo in forms %}
+    <div class="form-group simulation-form-{{ formInfo.simulation_id }}" data-simulationid="{{ formInfo.simulation_id }}">
+    {{ form_start(formInfo.form, {'attr': {'onsubmit': 'return simulationSubmit();'}}) }}
+        <div class="form-row mb-4">
+            <div class="col">
+            <em> Entry #{{ formInfo.simulation_id }}</em>
+            </div>
+        </div>
+        <div class="my-custom-class-for-errors">
+            {{ form_errors(formInfo.form) }}
+        </div>
+        <div class="form-row mb-4">
+            <div class="col">
+                {{ form_widget(formInfo.form.category, {'attr': {'placeholder': 'Category'} }) }}
+            </div>
+            <div class="col">
+                {{ form_widget(formInfo.form.token, {'attr': {'placeholder': 'Token'} }) }}
+            </div>
+            <div class="col">
+                {{ form_widget(formInfo.form.query_string, {'attr': {'placeholder': 'Querystring'} }) }}
+            </div>
+            <div class="col">
+                {{ form_widget(formInfo.form.active) }}
+            </div>
+        </div>
+        <div class="form-row mb-4">
+            <div class="col">
+                {{ form_widget(formInfo.form.response_delay, {'attr': {'placeholder': 'Response Delay'} }) }}
+            </div>
+            <div class="col">
+                {{ form_widget(formInfo.form.ttl, {'attr': {'placeholder': 'TTL'} }) }}
+            </div>
+        </div>
+        <div class="form-row mb-4">
+            <div class="col">
+                {{ form_widget(formInfo.form.http_verb, {'attr': {'placeholder': 'Method'} }) }}
+            </div>
+            <div class="col">
+            {{ form_widget(formInfo.form.response_content_type, {'attr': {'placeholder': 'Content Type'} }) }}
+            </div>
+            <div class="col">
+            {{ form_widget(formInfo.form.response_code, {'attr': {'placeholder': 'Response Code'} }) }}
+            </div>
+        </div>
+        <div class="form-row mb-4">
+            <div class="col">
+                Created: {{ formInfo.simulation_created|date('d/m/Y H:i:s') }}
+            </div>
+            <div class="col">
+                Updated: {{ formInfo.simulation_updated|date('d/m/Y H:i:s') }}
+            </div>
+        </div>
+        <div class="form-row mb-4">
+            <div class="col">
+                {{ form_widget(formInfo.form.parameters, {'attr': {'placeholder': 'Parameters'} }) }}
+                {{ form_widget(formInfo.form.request_body_content, {'attr': {'placeholder': 'Request Body'} }) }}
+            </div>
+            <div class="col">
+                {{ form_widget(formInfo.form.response_body_content, {'attr': {'placeholder': 'Response Body'} }) }}
+            </div>
+        </div>
+        <div class="form-row mb-4">
+            <div class="col">
+                {{ form_row(formInfo.form.save, { 'label': 'Save' }) }}
+            </div>
+        </div>
+    {{ form_end(formInfo.form, {'render_rest': false}) }}
+    </div>
+{% endfor %}
+{% if is_page is defined %}
+    <a class="pagination__next" href="">Next</a>
+    <div class="scroller-status">
+        <div class="infinite-scroll-request">
+            <div class="d-flex justify-content-center">
+                <div class="spinner-border" role="status">
+                    <span class="sr-only">Loading...</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% if forms is empty %}
+        <p class="infinite-scroll-last">End of content</p>
+    {% endif %}
+{% endif %}
+

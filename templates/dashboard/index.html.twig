@@ -1,0 +1,30 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% set currentPage = 'dashboard' %}
+
+{% block body %}
+    <div class="preloader-new-content">
+        <div class="d-flex justify-content-center">
+            <div class="spinner-border" role="status">
+                <span class="sr-only">Loading...</span>
+            </div>
+        </div>
+    </div>
+    <div class="forms">
+        <div class="content" id="forms-content">
+            <div class="pagination d-none">
+                <span class="pagination__current">Page 1</span>
+                <a class="pagination__next" href="/simulation-forms/page/1">Next</a>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+
+    {{ encore_entry_script_tags('dashboard') }}
+{% endblock %}
+
