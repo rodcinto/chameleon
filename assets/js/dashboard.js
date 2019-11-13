@@ -18,20 +18,25 @@ infScroll.on( 'append', ( event, response, path, items ) => {
     $('.preloader-new-content').hide();
 });
 
+var getCurrentTime = function() {
+    return  Math.floor(new Date().getTime() / 1000);
+}
+
+let timestampLastLoaded = getCurrentTime();
+
 $(window).on('scroll', () => {
-    // @TODO This should be on last loaded time, not last saved ID.
     if (0 === $(window).scrollTop()) {
         $('.preloader-new-content').show();
 
-        $firstSimulationId = $('.form-group').first().data('simulationid');
-
         $.ajax({
-            url: '/simulation-forms/fresh/' + $firstSimulationId,
+            url: '/simulation-forms/fresh/' + timestampLastLoaded,
             dataType: 'html'
         }).done(function(data) {
             $('#forms-content').prepend($.parseHTML(data));
             $('.preloader-new-content').hide();
             $('.scroller-status').hide();
+
+            timestampLastLoaded = getCurrentTime();
         });
     }
 })

@@ -15,12 +15,12 @@ simulation_forms_page:
     page: 1
 
 simulation_forms_fresh:
-  path: /simulation-forms/fresh/{id}
+  path: /simulation-forms/fresh/{lastTime}
   controller: App\Controller\SimulationFormsController::fresh
   requirements:
-    id: '\d+'
+    lastTime: '\d+'
   defaults:
-    id: 1
+    lastTime: 0
 
 simulation_forms_edit:
   path: /simulation-forms/edit/{simulation}

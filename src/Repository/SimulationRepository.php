@@ -46,15 +46,15 @@ class SimulationRepository extends ServiceEntityRepository
     /**
      * Find only fresh.
      *
-     * @param integer $id
+     * @param integer $lastTime
      * @return void
      */
-    public function findFresh(int $id)
+    public function findFresh(int $lastTime)
     {
         return $this->createQueryBuilder('s')
-            ->andWhere('s.id > :val')
-            ->setParameter('val', $id)
-            ->orderBy('s.id', 'DESC')
+            ->andWhere('s.created > :val')
+            ->setParameter('val', new \DateTime('@' . $lastTime))
+            ->orderBy('s.created', 'DESC')
             ->setMaxResults(self::MAX_RESULTS)
             ->getQuery()
             ->getResult()

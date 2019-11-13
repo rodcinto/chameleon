@@ -66,12 +66,12 @@ class SimulationFormsController extends AbstractController
     /**
      * Fresh forms.
      *
-     * @param integer $id
+     * @param integer $lastTime
      * @return void
      */
-    public function fresh(int $id)
+    public function fresh(int $lastTime)
     {
-        $simulationsByFresh = $this->repository->findFresh($id);
+        $simulationsByFresh = $this->repository->findFresh($lastTime);
         $forms = $this->populateForms($simulationsByFresh);
 
         return $this->render('simulation_forms/index.html.twig', [
