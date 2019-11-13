@@ -1,0 +1,23 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+    ],
+    "settings": {
+        "phpcs.ignorePatterns": [
+            "bin/**/*",
+            "var/**/*",
+            "vendor/**/*"
+        ],
+        "files.watcherExclude": {
+            "**/var/**": true,
+            "**/vendor/**": true
+        },
+        "search.exclude": {
+            "**/bin": true,
+            "**/var": true,
+            "**/vendor": true
+        }
+    }
+}
