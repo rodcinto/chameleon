@@ -1,6 +1,7 @@
 <?php
 namespace App\Service;
 
+use Exception;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Entity\Simulation;
@@ -11,6 +12,7 @@ class SimulationManager
 {
     const NEW_REQUEST_MESSAGE = 'New request saved in the database.';
     const REQUEST_FOUND_NO_CONTENT = 'Request found, but no response set yet.';
+
     /**
      * @var LoggerInterface
      */
@@ -40,6 +42,7 @@ class SimulationManager
 
     /**
      * @return Response
+     * @throws Exception
      */
     public function buildResponse()
     {
@@ -64,7 +67,7 @@ class SimulationManager
     }
 
     /**
-     * @return void
+     * @return mixed
      */
     private function findSimulationByRequest()
     {
@@ -73,14 +76,17 @@ class SimulationManager
     }
 
     /**
+     * @param Request $request
+     * @param $category
+     * @param $token
      * @return void
      */
     public function createRequestCriteria(Request $request, $category, $token)
     {
-        $this->requestCriteria = [];
-
-        $this->requestCriteria['category'] = $category;
-        $this->requestCriteria['token']    = $token;
+        $this->requestCriteria = [
+            'category'  => $category,
+            'token'     => $token,
+        ];
 
         if (!empty($request->getMethod())) {
             $this->requestCriteria['http_verb'] = $request->getMethod();
@@ -134,6 +140,7 @@ class SimulationManager
 
     /**
      * @return void
+     * @throws Exception
      */
     private function persistNewSimulation()
     {

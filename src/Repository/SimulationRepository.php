@@ -3,9 +3,12 @@
 namespace App\Repository;
 
 use App\Entity\Simulation;
+use DateTime;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Common\Persistence\ManagerRegistry;
+use Doctrine\ORM\Query;
 use Doctrine\ORM\Tools\Pagination\Paginator;
+use Exception;
 
 /**
  * @method Simulation|null find($id, $lockMode = null, $lockVersion = null)
@@ -48,12 +51,13 @@ class SimulationRepository extends ServiceEntityRepository
      *
      * @param integer $lastTime
      * @return void
+     * @throws Exception
      */
     public function findFresh(int $lastTime)
     {
         return $this->createQueryBuilder('s')
             ->andWhere('s.created > :val')
-            ->setParameter('val', new \DateTime('@' . $lastTime))
+            ->setParameter('val', new DateTime('@' . $lastTime))
             ->orderBy('s.created', 'DESC')
             ->setMaxResults(self::MAX_RESULTS)
             ->getQuery()
@@ -65,9 +69,9 @@ class SimulationRepository extends ServiceEntityRepository
      * Find all.
      *
      * @param integer $currentPage
-     * @return void
+     * @return Paginator|void
      */
-    public function findAll(int $currentPage = 1)
+    public function findAllByPage(int $currentPage = 1)
     {
         $query = $this->createQueryBuilder('s')
             ->orderBy('s.created', 'DESC')
@@ -81,16 +85,16 @@ class SimulationRepository extends ServiceEntityRepository
     /**
      * Paginate.
      *
-     * @param \Doctrine\ORM\Query $query
+     * @param Query $query
      * @param integer $page
      * @param integer $limit
-     * @return \Doctrine\ORM\Tools\Pagination\Paginator
+     * @return Paginator
      */
-    private function paginate(\Doctrine\ORM\Query $query, int $page, int $limit = 5)
+    private function paginate(Query $query, int $page, int $limit = 5)
     {
         $paginator = new Paginator($query);
 
-        $paginator->getQuery($query)
+        $paginator->getQuery()
             ->setFirstResult($limit * ($page - 1))
             ->setMaxResults($limit);
 

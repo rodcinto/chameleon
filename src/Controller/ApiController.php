@@ -5,6 +5,7 @@ namespace App\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use App\Service\SimulationManager;
+use Symfony\Component\HttpFoundation\Response;
 
 class ApiController extends AbstractController
 {
@@ -23,6 +24,12 @@ class ApiController extends AbstractController
         $this->simulationManager = $simulationManager;
     }
 
+    /**
+     * @param Request $request
+     * @param string $category
+     * @param string $token
+     * @return Response
+     */
     public function index(Request $request, string $category, string $token)
     {
         $this->simulationManager->createRequestCriteria($request, $category, $token);

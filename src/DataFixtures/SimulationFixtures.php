@@ -2,15 +2,28 @@
 
 namespace App\DataFixtures;
 
+use DateTime;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\Persistence\ObjectManager;
 use App\Entity\Simulation;
+use Faker\Factory;
 
 class SimulationFixtures extends Fixture
 {
+    private $faker;
+    private $categories;
+    private $tokens;
+    private $HTTPVerbs;
+    private $active;
+    private $responseCodes;
+    private $responseContentTypes;
+
+    /**
+     * SimulationFixtures constructor.
+     */
     public function __construct()
     {
-        $this->faker = \Faker\Factory::create();
+        $this->faker = Factory::create();
 
         $this->categories = [
             'products',
@@ -45,6 +58,9 @@ class SimulationFixtures extends Fixture
         ];
     }
 
+    /**
+     * @param ObjectManager $manager
+     */
     public function load(ObjectManager $manager)
     {
         for ($i = 0; $i < 10; $i++) {
@@ -65,17 +81,27 @@ class SimulationFixtures extends Fixture
         $manager->flush();
     }
 
+    /**
+     * @param $anArray
+     * @return mixed
+     */
     private function getRandomFrom($anArray)
     {
         return $anArray[rand(0, count($anArray) - 1)];
     }
 
+    /**
+     * @return string
+     */
     protected function randomText():string
     {
         $emptyOrText = ['', $this->faker->text];
         return $this->getRandomFrom($emptyOrText);
     }
 
+    /**
+     * @return DateTime
+     */
     protected function randomDate()
     {
         return $this->faker->dateTimeThisMonth('now');

@@ -26,12 +26,12 @@ class SimulationFormsController extends AbstractController
     /**
      * Index.
      *
-     * @param integer $page
-     * @return void
+     * @param integer $pageNumber
+     * @return Response
      */
-    public function index(int $page)
+    public function index(int $pageNumber)
     {
-        $simulationsByPage = $this->repository->findAll($page);
+        $simulationsByPage = $this->repository->findAllByPage($pageNumber);
 
         $forms = $this->populateForms($simulationsByPage);
 
@@ -46,11 +46,13 @@ class SimulationFormsController extends AbstractController
      * Populate Forms.
      *
      * @param $simulations
-     * @return void
+     * @return array|void
      */
     private function populateForms($simulations)
     {
         $forms = [];
+
+        /** @var Simulation $simulation */
         foreach ($simulations as $simulation) {
             $form = $this->createForm(SimulationType::class, $simulation);
             $forms[] = [
@@ -60,6 +62,7 @@ class SimulationFormsController extends AbstractController
                 'form' => $form->createView(),
             ];
         }
+
         return $forms;
     }
 
@@ -67,7 +70,7 @@ class SimulationFormsController extends AbstractController
      * Fresh forms.
      *
      * @param integer $lastTime
-     * @return void
+     * @return Response
      */
     public function fresh(int $lastTime)
     {
@@ -85,7 +88,7 @@ class SimulationFormsController extends AbstractController
      *
      * @param Request $request
      * @param Simulation $simulation
-     * @return void
+     * @return Response
      */
     public function edit(Request $request, Simulation $simulation)
     {
@@ -104,6 +107,7 @@ class SimulationFormsController extends AbstractController
                 return new Response(200);
             }
         }
+
         return new Response(400);
     }
 }

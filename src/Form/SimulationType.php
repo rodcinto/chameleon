@@ -15,6 +15,10 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class SimulationType extends AbstractType
 {
+    /**
+     * @param FormBuilderInterface $builder
+     * @param array $options
+     */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
@@ -59,10 +63,12 @@ class SimulationType extends AbstractType
                 'attr' => [
                     'class' => 'btn-save-simulation'
                 ],
-            ])
-        ;
+            ]);
     }
 
+    /**
+     * @param OptionsResolver $resolver
+     */
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
