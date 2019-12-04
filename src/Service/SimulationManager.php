@@ -1,6 +1,7 @@
 <?php
 namespace App\Service;
 
+use DateTime;
 use Exception;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -10,6 +11,7 @@ use Doctrine\ORM\EntityManagerInterface;
 
 class SimulationManager
 {
+    const PROXIMITY_PERCENTAGE = 90;
     const NEW_REQUEST_MESSAGE = 'New request saved in the database.';
     const REQUEST_FOUND_NO_CONTENT = 'Request found, but no response set yet.';
 
@@ -29,6 +31,11 @@ class SimulationManager
     private $requestCriteria;
 
     /**
+     * @var string
+     */
+    private $requestBody;
+
+    /**
      * Constructor.
      *
      * @param LoggerInterface $logger
@@ -46,6 +53,7 @@ class SimulationManager
      */
     public function buildResponse()
     {
+        $this->logger->debug('buildResponse');
         $simulation = $this->findSimulationByRequest();
 
         $response = new Response();
@@ -56,10 +64,11 @@ class SimulationManager
         }
 
         if (count($simulation) > 0) {
-            $simulation = $simulation[0];
+            $this->logger->info('Found many candidates:', [print_r($simulation, true)]);
+            $simulation = $this->filterBestResult($simulation);
         }
 
-        if ($simulation->getResponseBodyContent()) {
+        if ($simulation instanceof Simulation && $simulation->getResponseBodyContent()) {
             return $this->modifyResponseForSimulation($response, $simulation);
         }
 
@@ -72,6 +81,7 @@ class SimulationManager
     private function findSimulationByRequest()
     {
         $repo = $this->entityManager->getRepository(Simulation::class);
+
         return $repo->findRequestBy($this->requestCriteria);
     }
 
@@ -93,7 +103,8 @@ class SimulationManager
         }
 
         if (!empty($request->getContent())) {
-            $this->requestCriteria['request_body_content'] = $request->getContent();
+            $this->requestBody = trim($request->getContent());
+            $this->logger->info('Search request content', [$this->requestBody]);
         }
 
         $parameters = $this->formatRequestParams($request->request->all());
@@ -166,7 +177,7 @@ class SimulationManager
 
         $simulation->setActive(true);
         $simulation->setTtl(15);
-        $simulation->setCreated(new \DateTime('now'));
+        $simulation->setCreated(new DateTime('now'));
 
         $this->entityManager->persist($simulation);
 
@@ -183,7 +194,7 @@ class SimulationManager
         $response->setContent($simulation->getResponseBodyContent());
 
         if ($simulation->getResponseContentType()) {
-            $response->headers->set('Content-Type', $simulation->getContentType());
+            $response->headers->set('Content-Type', $simulation->getResponseContentType());
         }
 
         if ($simulation->getResponseCode()) {
@@ -195,5 +206,31 @@ class SimulationManager
         }
 
         return $response;
+    }
+
+    /**
+     * @param array $simulations
+     * @return Simulation
+     */
+    private function filterBestResult(array $simulations)
+    {
+        $filtered = array_filter($simulations, function(Simulation $simCandidate) {
+            $similarity = 0;
+
+            similar_text($simCandidate->getRequestBodyContent(), $this->requestBody, $similarity);
+
+            $this->logger->info('Similarity: ', [
+                'request' => $this->requestBody,
+                'candidate' => $simCandidate->getRequestBodyContent(),
+                'similarity' => $similarity]);
+
+            return self::PROXIMITY_PERCENTAGE <= $similarity;
+        });
+
+        if (is_array($filtered) && count($filtered) > 0) {
+            return end($filtered);
+        }
+
+        return $filtered;
     }
 }

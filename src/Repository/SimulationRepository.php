@@ -41,7 +41,6 @@ class SimulationRepository extends ServiceEntityRepository
         }
 
         return $queryBuilder
-            ->setMaxResults(1)
             ->getQuery()
             ->getResult();
     }

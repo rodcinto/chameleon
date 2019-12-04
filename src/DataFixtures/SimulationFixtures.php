@@ -19,6 +19,33 @@ class SimulationFixtures extends Fixture
     private $responseContentTypes;
 
     /**
+     * @param ObjectManager $manager
+     */
+    public function load(ObjectManager $manager)
+    {
+        for ($i = 0; $i < 10; $i++) {
+            $simulation = new Simulation();
+            $simulation->setCategory($this->getRandomFrom($this->categories))
+                ->setToken($this->getRandomFrom($this->tokens))
+                ->setHttpVerb($this->getRandomFrom($this->HTTPVerbs))
+                ->setActive($this->getRandomFrom($this->active))
+                ->setRequestBodyContent($this->randomText())
+                ->setTtl(rand(10, 20))
+                ->setResponseCode($this->getRandomFrom($this->responseCodes))
+                ->setResponseBodyContent($this->randomText())
+                ->setCreated($this->randomDate());
+
+            $manager->persist($simulation);
+        }
+
+        $identicalSimulations = $this->makeTwoSimulationsAndDifferentContents();
+        $manager->persist($identicalSimulations[0]);
+        $manager->persist($identicalSimulations[1]);
+
+        $manager->flush();
+    }
+
+    /**
      * SimulationFixtures constructor.
      */
     public function __construct()
@@ -59,29 +86,6 @@ class SimulationFixtures extends Fixture
     }
 
     /**
-     * @param ObjectManager $manager
-     */
-    public function load(ObjectManager $manager)
-    {
-        for ($i = 0; $i < 10; $i++) {
-            $simulation = new Simulation();
-            $simulation->setCategory($this->getRandomFrom($this->categories))
-                ->setToken($this->getRandomFrom($this->tokens))
-                ->setHttpVerb($this->getRandomFrom($this->HTTPVerbs))
-                ->setActive($this->getRandomFrom($this->active))
-                ->setRequestBodyContent($this->randomText())
-                ->setTtl(rand(10, 20))
-                ->setResponseCode($this->getRandomFrom($this->responseCodes))
-                ->setResponseBodyContent($this->randomText())
-                ->setCreated($this->randomDate());
-
-            $manager->persist($simulation);
-        }
-
-        $manager->flush();
-    }
-
-    /**
      * @param $anArray
      * @return mixed
      */
@@ -105,5 +109,35 @@ class SimulationFixtures extends Fixture
     protected function randomDate()
     {
         return $this->faker->dateTimeThisMonth('now');
+    }
+
+    /**
+     * @return Simulation[]
+     */
+    protected function makeTwoSimulationsAndDifferentContents()
+    {
+        $simulations = [];
+
+        do {
+            $simulation = new Simulation();
+
+            $simulation->setCategory('contentTest')
+                ->setToken('content')
+                ->setHttpVerb('POST')
+                ->setActive(true)
+                ->setTtl(15)
+                ->setResponseCode(200)
+                ->setCreated($this->randomDate());
+
+            $simulations[] = $simulation;
+        } while (count($simulations) < 2);
+
+        $simulations[0]->setRequestBodyContent('<request><text><title>Request with title</title></text></request>');
+        $simulations[1]->setRequestBodyContent('<request><text><body>Request with body</body></text></request>');
+
+        $simulations[0]->setResponseBodyContent('<response><text><title>Response with title</title></text></response>');
+        $simulations[1]->setResponseBodyContent('<response><text><body>Response with body</body></text></response>');
+
+        return $simulations;
     }
 }

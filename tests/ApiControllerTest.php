@@ -1,9 +1,9 @@
 <?php
 namespace App\Tests;
 
+use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
-//@todo Install DAMA\DoctrineTestBundle\PHPUnit\PHPUnitExtension
 class ApiControllerTest extends WebTestCase
 {
     const NEW_REQUEST_MESSAGE = 'New request saved in the database.';
@@ -76,17 +76,32 @@ class ApiControllerTest extends WebTestCase
     }
 
     /**
+     * Test result by content.
+     */
+    public function testRequestSimilarContents()
+    {
+        $requestUrl = '/api/contentTest/content';
+        $requestContent = '<request><text><title>Request with titles</title></text></request>';
+        $client = $this->makeRequest('POST', $requestUrl, [], $requestContent);
+        $response = $client->getResponse();
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertSelectorTextContains('', 'Response with title');
+    }
+
+    /**
      * Request a URL and return the Client object.
      *
      * @param string $method
      * @param string $url
      * @param array $params
-     * @return Client
+     * @param string|null $requestBody
+     *
+     * @return KernelBrowser
      */
-    private function makeRequest(string $method, string $url, array $params = [])
+    private function makeRequest(string $method, string $url, array $params = [], string $requestBody = null)
     {
         $client = static::createClient();
-        $client->request($method, $url, $params);
+        $client->request($method, $url, $params, [], [], $requestBody);
         return $client;
     }
 }
