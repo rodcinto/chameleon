@@ -1,9 +1,11 @@
 console.info('Dashboard Initiated.');
 
-const $ = require('jquery');
-var InfiniteScroll = require('infinite-scroll');
+require('../css/forms.scss');
 
-var infScroll = new InfiniteScroll('#forms-content', {
+const $ = require('jquery');
+const InfiniteScroll = require('infinite-scroll');
+
+const infScroll = new InfiniteScroll('#forms-content', {
     path: '.pagination__next',
     responseType: 'document',
     checkLastPage: true,
@@ -18,7 +20,7 @@ infScroll.on( 'append', ( event, response, path, items ) => {
     $('.preloader-new-content').hide();
 });
 
-var getCurrentTime = function() {
+const getCurrentTime = function() {
     return  Math.floor(new Date().getTime() / 1000);
 }
 
@@ -50,13 +52,30 @@ window.simulationSubmit = function() {
     console.log(data);
 
     //console.log(JSON.stringify(data));
-    var simulationid = $(this.event.target).parents('.form-group').data('simulationid');
+    const simulationId = $(this.event.target).parents('.form-group').data('simulationId');
     $.ajax({
-        url: '/simulation-forms/edit/' + simulationid,
+        url: '/simulation-forms/edit/' + simulationId,
         method: 'post',
         dataType: 'json',
         data: data
     }).done((data) => {
         console.log('Saved data response', data);
+    });
+}
+
+window.deleteSimulation = function(simulationId) {
+
+    console.log('SimulationId to delete: ' + simulationId);
+
+    $('.preloader-new-content').show();
+
+    $.ajax({
+        url: '/simulation-forms/delete/' + simulationId,
+        method: 'post'
+    }).done(function(data, textStatus, xhr) {
+        if (xhr.status === 200) {
+            $('.simulation-form-' + simulationId).remove();
+        }
+        $('.preloader-new-content').hide();
     });
 }

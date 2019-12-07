@@ -1,9 +1,23 @@
 {% for formInfo in forms %}
-    <div class="form-group simulation-form-{{ formInfo.simulation_id }}" data-simulationid="{{ formInfo.simulation_id }}">
+    <div class="simulation form-group simulation-form-{{ formInfo.simulation_id }}" data-simulationId="{{ formInfo.simulation_id }}">
     {{ form_start(formInfo.form, {'attr': {'onsubmit': 'return simulationSubmit();'}}) }}
         <div class="form-row mb-4">
             <div class="col">
-            <em> Entry #{{ formInfo.simulation_id }}</em>
+                <h3> Entry #{{ formInfo.simulation_id }}</h3>
+                <hr>
+            </div>
+        </div>
+        <div class="form-row mb-4">
+            <div class="col">
+                <em>
+                    {{ form_label(formInfo.form.active) }}
+                    {{ form_widget(formInfo.form.active) }}
+                </em>
+
+                <div>
+                    <em>Created at</em>: {{ formInfo.simulation_created|date('d/m/Y H:i:s') }},
+                    <em>Updated at</em>: {{ formInfo.simulation_updated|date('d/m/Y H:i:s') }}
+                </div>
             </div>
         </div>
         <div class="my-custom-class-for-errors">
@@ -11,57 +25,70 @@
         </div>
         <div class="form-row mb-4">
             <div class="col">
+                {{ form_errors(formInfo.form.category) }}
+                {{ form_label(formInfo.form.category) }}
                 {{ form_widget(formInfo.form.category, {'attr': {'placeholder': 'Category'} }) }}
             </div>
             <div class="col">
+                {{ form_errors(formInfo.form.token) }}
+                {{ form_label(formInfo.form.token) }}
                 {{ form_widget(formInfo.form.token, {'attr': {'placeholder': 'Token'} }) }}
             </div>
             <div class="col">
+                {{ form_errors(formInfo.form.query_string) }}
+                {{ form_label(formInfo.form.query_string) }}
                 {{ form_widget(formInfo.form.query_string, {'attr': {'placeholder': 'Querystring'} }) }}
-            </div>
-            <div class="col">
-                {{ form_widget(formInfo.form.active) }}
             </div>
         </div>
         <div class="form-row mb-4">
             <div class="col">
+                {{ form_errors(formInfo.form.http_verb) }}
+                {{ form_label(formInfo.form.http_verb) }}
+                {{ form_widget(formInfo.form.http_verb, {'attr': {'placeholder': 'Method'} }) }}
+            </div>
+            <div class="col">
+                {{ form_errors(formInfo.form.response_code) }}
+                {{ form_label(formInfo.form.response_code) }}
+                {{ form_widget(formInfo.form.response_code, {'attr': {'placeholder': 'Response Code'} }) }}
+            </div>
+            <div class="col">
+                {{ form_errors(formInfo.form.response_content_type) }}
+                {{ form_label(formInfo.form.response_content_type) }}
+                {{ form_widget(formInfo.form.response_content_type, {'attr': {'placeholder': 'Content Type'} }) }}
+            </div>
+            <div class="col">
+                {{ form_errors(formInfo.form.response_delay) }}
+                {{ form_label(formInfo.form.response_delay) }}
                 {{ form_widget(formInfo.form.response_delay, {'attr': {'placeholder': 'Response Delay'} }) }}
             </div>
             <div class="col">
+                {{ form_errors(formInfo.form.ttl) }}
+                {{ form_label(formInfo.form.ttl) }}
                 {{ form_widget(formInfo.form.ttl, {'attr': {'placeholder': 'TTL'} }) }}
             </div>
         </div>
         <div class="form-row mb-4">
             <div class="col">
-                {{ form_widget(formInfo.form.http_verb, {'attr': {'placeholder': 'Method'} }) }}
-            </div>
-            <div class="col">
-            {{ form_widget(formInfo.form.response_content_type, {'attr': {'placeholder': 'Content Type'} }) }}
-            </div>
-            <div class="col">
-            {{ form_widget(formInfo.form.response_code, {'attr': {'placeholder': 'Response Code'} }) }}
-            </div>
-        </div>
-        <div class="form-row mb-4">
-            <div class="col">
-                Created: {{ formInfo.simulation_created|date('d/m/Y H:i:s') }}
-            </div>
-            <div class="col">
-                Updated: {{ formInfo.simulation_updated|date('d/m/Y H:i:s') }}
-            </div>
-        </div>
-        <div class="form-row mb-4">
-            <div class="col">
+                {{ form_errors(formInfo.form.parameters) }}
+                {{ form_label(formInfo.form.parameters) }}
                 {{ form_widget(formInfo.form.parameters, {'attr': {'placeholder': 'Parameters'} }) }}
+
+                {{ form_errors(formInfo.form.request_body_content) }}
+                {{ form_label(formInfo.form.request_body_content) }}
                 {{ form_widget(formInfo.form.request_body_content, {'attr': {'placeholder': 'Request Body'} }) }}
             </div>
-            <div class="col">
+            <div class="col response">
+                {{ form_errors(formInfo.form.response_body_content) }}
+                {{ form_label(formInfo.form.response_body_content) }}
                 {{ form_widget(formInfo.form.response_body_content, {'attr': {'placeholder': 'Response Body'} }) }}
             </div>
         </div>
         <div class="form-row mb-4">
-            <div class="col">
+            <div class="col actions">
                 {{ form_row(formInfo.form.save, { 'label': 'Save' }) }}
+                <div>
+                    <button type="button" class="btn-delete btn-secondary" onclick="deleteSimulation({{ formInfo.simulation_id }})">Delete</button>
+                </div>
             </div>
         </div>
     {{ form_end(formInfo.form, {'render_rest': false}) }}

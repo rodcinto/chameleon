@@ -1,0 +1,37 @@
+body.dashboard {
+  .simulation {
+    background-color: #e5e5e5;
+    border-style: inset;
+    border-width: thin;
+    padding: 10px;
+  }
+
+  label {
+    text-transform: capitalize;
+    &.required:after {
+      color: red;
+      content: " *";
+    }
+  }
+
+  input[type="text"],
+  select,
+  textarea {
+    width: 100%;
+  }
+
+  textarea {
+    min-height: 100px;
+  }
+
+  .response textarea {
+    min-height: 234px;
+  }
+
+  .actions {
+    div {
+      display: inline-block;
+      padding: 0 5px;
+    }
+  }
+}

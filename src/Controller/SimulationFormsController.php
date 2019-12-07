@@ -2,6 +2,8 @@
 
 namespace App\Controller;
 
+use Exception;
+use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use App\Entity\Simulation;
 use App\Form\SimulationType;
@@ -13,25 +15,29 @@ class SimulationFormsController extends AbstractController
 {
     private $repository;
 
+    private $logger;
+
     /**
      * Constructor.
      *
      * @param EntityManagerInterface $entityManager
+     * @param LoggerInterface $logger
      */
-    public function __construct(EntityManagerInterface $entityManager)
+    public function __construct(EntityManagerInterface $entityManager, LoggerInterface $logger)
     {
         $this->repository = $entityManager->getRepository(Simulation::class);
+        $this->logger = $logger;
     }
 
     /**
      * Index.
      *
-     * @param integer $pageNumber
+     * @param integer $page
      * @return Response
      */
-    public function index(int $pageNumber)
+    public function index(int $page)
     {
-        $simulationsByPage = $this->repository->findAllByPage($pageNumber);
+        $simulationsByPage = $this->repository->findAllByPage($page);
 
         $forms = $this->populateForms($simulationsByPage);
 
@@ -95,8 +101,6 @@ class SimulationFormsController extends AbstractController
         $form = $this->createForm(SimulationType::class, $simulation);
 
         if ($request->isMethod('POST')) {
-            $data = $request->getContent();
-
             $form->handleRequest($request);
 
             if ($form->isSubmitted() && $form->isValid()) {
@@ -109,5 +113,28 @@ class SimulationFormsController extends AbstractController
         }
 
         return new Response(400);
+    }
+
+    /**
+     * @param Request $request
+     * @param Simulation $simulation
+     *
+     * @return Response
+     */
+    public function delete(Request $request, Simulation $simulation)
+    {
+        if ($request->isMethod('POST')) {
+            $entityManager = $this->getDoctrine()->getManager();
+            try {
+                $entityManager->remove($simulation);
+                $entityManager->flush();
+
+                return new Response('', Response::HTTP_OK);
+            } catch (Exception $e) {
+                $this->logger->error('Error deleting Simulation', [$e->getMessage()]);
+            }
+        }
+
+        return new Response('', Response::HTTP_BAD_REQUEST);
     }
 }

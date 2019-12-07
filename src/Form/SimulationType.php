@@ -4,13 +4,13 @@ namespace App\Form;
 
 use App\Entity\Simulation;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
-use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class SimulationType extends AbstractType
@@ -28,8 +28,19 @@ class SimulationType extends AbstractType
             ->add('token', TextType::class, [
                 'required' => false
             ])
-            ->add('http_verb', TextType::class, [
-                'required' => true
+            ->add('http_verb', ChoiceType::class, [
+                'required' => true,
+                'choices' => [
+                    'GET' => 'GET',
+                    'POST' => 'POST',
+                    'PUT' => 'PUT',
+                    'DELETE' => 'DELETE',
+                    'PATCH' => 'PATCH',
+                    'HEAD' => 'HEAD',
+                    'CONNECT' => 'CONNECT',
+                    'OPTIONS' => 'OPTIONS',
+                    'TRACE' => 'TRACE',
+                ]
             ])
             ->add('parameters', TextareaType::class, [
                 'required' => false
@@ -40,8 +51,14 @@ class SimulationType extends AbstractType
             ->add('request_body_content', TextareaType::class, [
                 'required' => false
             ])
-            ->add('response_code', TextType::class, [
-                'required' => false
+            ->add('response_code', ChoiceType::class, [
+                'required' => false,
+                'choices' => [
+                    '200' => 200,
+                    '300' => 300,
+                    '401' => 401,
+                    '500' => 500,
+                ]
             ])
             ->add('response_body_content', TextareaType::class, [
                 'required' => false
@@ -54,14 +71,16 @@ class SimulationType extends AbstractType
             ])
             ->add('ttl', NumberType::class, [
                 'required' => true,
+                'empty_data' => 15,
+                'label' => 'TTL (min)',
             ])
             ->add('active', CheckboxType::class, [
-                'label'    => 'Show this entry publicly?',
+                'label'    => 'Simulation is active',
                 'required' => false,
             ])
             ->add('save', SubmitType::class, [
                 'attr' => [
-                    'class' => 'btn-save-simulation'
+                    'class' => 'btn-save-simulation btn-primary'
                 ],
             ]);
     }
