@@ -64,10 +64,12 @@ class SimulationType extends AbstractType
                 'required' => false
             ])
             ->add('response_content_type', TextType::class, [
-                'required' => false
+                'required' => false,
+                'empty_data' => 'text',
             ])
             ->add('response_delay', TextType::class, [
-                'required' => false
+                'required' => false,
+                'empty_data' => 0,
             ])
             ->add('ttl', NumberType::class, [
                 'required' => true,

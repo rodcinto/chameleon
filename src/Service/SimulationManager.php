@@ -12,7 +12,7 @@ use Doctrine\ORM\EntityManagerInterface;
 class SimulationManager
 {
     const PROXIMITY_PERCENTAGE = 90;
-    const NEW_REQUEST_MESSAGE = 'New request saved in the database.';
+    const NEW_REQUEST_MESSAGE = 'New request saved. It will be loaded next time.';
     const REQUEST_FOUND_NO_CONTENT = 'Request found, but no response set yet.';
 
     /**
@@ -54,21 +54,25 @@ class SimulationManager
     public function buildResponse()
     {
         $this->logger->debug('buildResponse');
-        $simulation = $this->findSimulationByRequest();
+        $simulations = $this->findSimulationByRequest();
+
+        $this->logger->info('Result', [$simulations]);
 
         $response = new Response();
 
-        if (empty($simulation)) {
+        if (empty($simulations)) {
             $this->persistNewSimulation();
             return $response->setContent(self::NEW_REQUEST_MESSAGE);
         }
 
-        if (count($simulation) > 0) {
-            $this->logger->info('Found many candidates:', [print_r($simulation, true)]);
-            $simulation = $this->filterBestResult($simulation);
+        if (count($simulations) === 1) {
+            $simulation = end($simulations);
+        } else {
+            $this->logger->info('Found many candidates:', [$simulations]);
+            $simulation = $this->filterBestResult($simulations);
         }
 
-        if ($simulation instanceof Simulation && $simulation->getResponseBodyContent()) {
+        if ($simulation instanceof Simulation && !empty($simulation->getResponseBodyContent())) {
             return $this->modifyResponseForSimulation($response, $simulation);
         }
 
@@ -81,6 +85,8 @@ class SimulationManager
     private function findSimulationByRequest()
     {
         $repo = $this->entityManager->getRepository(Simulation::class);
+
+        $this->logger->info('Request Criteria', [$this->requestCriteria]);
 
         return $repo->findRequestBy($this->requestCriteria);
     }
@@ -98,23 +104,27 @@ class SimulationManager
             'token'     => $token,
         ];
 
-        if (!empty($request->getMethod())) {
-            $this->requestCriteria['http_verb'] = $request->getMethod();
-        }
-
         if (!empty($request->getContent())) {
             $this->requestBody = trim($request->getContent());
             $this->logger->info('Search request content', [$this->requestBody]);
         }
 
+        $requestMethod = $request->getMethod();
+        if (!empty($requestMethod)) {
+            $this->requestCriteria['http_verb'] = $requestMethod;
+            $this->logger->info('Search request method', [$requestMethod]);
+        }
+
         $parameters = $this->formatRequestParams($request->request->all());
         if ('' !== $parameters) {
             $this->requestCriteria['parameters'] = $parameters;
+            $this->logger->info('Search request parameters', [$parameters]);
         }
 
         $queryString = $this->formatQueryString($request->query->all());
         if ('' !== $queryString) {
             $this->requestCriteria['query_string'] = $queryString;
+            $this->logger->info('Search request query_string', [$queryString]);
         }
     }
 
@@ -125,7 +135,8 @@ class SimulationManager
     private function formatRequestParams($parameters)
     {
         if (!empty($parameters)) {
-            return var_export($parameters, true);
+            $exportedParameters = var_export($parameters, true);
+            return trim(str_replace(["\r", "\n"], '', $exportedParameters));
         }
 
         return '';
@@ -177,6 +188,7 @@ class SimulationManager
 
         $simulation->setActive(true);
         $simulation->setTtl(15);
+        $simulation->setResponseDelay(0);
         $simulation->setCreated(new DateTime('now'));
 
         $this->entityManager->persist($simulation);

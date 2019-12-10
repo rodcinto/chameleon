@@ -33,9 +33,14 @@ class SimulationRepository extends ServiceEntityRepository
      */
     public function findRequestBy(array $criteria)
     {
-        //@todo Where should I put the logic of content proximity?
         $queryBuilder = $this->createQueryBuilder('s');
         foreach ($criteria as $field => $value) {
+            if ($field === 'parameters') {
+                $queryBuilder->andWhere(sprintf('s.%s LIKE :val_%s', $field, $field))
+                    ->setParameter('val_' . $field, $value);
+                continue;
+            }
+
             $queryBuilder->andWhere(sprintf('s.%s = :val_%s', $field, $field))
                 ->setParameter('val_' . $field, $value);
         }

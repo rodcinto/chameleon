@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use App\Service\SimulationManager;
@@ -29,6 +30,7 @@ class ApiController extends AbstractController
      * @param string $category
      * @param string $token
      * @return Response
+     * @throws Exception
      */
     public function index(Request $request, string $category, string $token)
     {

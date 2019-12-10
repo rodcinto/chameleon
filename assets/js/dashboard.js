@@ -43,16 +43,19 @@ $(window).on('scroll', () => {
     }
 })
 
-window.simulationSubmit = function() {
+window.simulationSubmit = function(simulationId) {
     this.event.preventDefault();
     let data = {};
     $(this.event.target).serializeArray().forEach((object)=>{
         data[object.name] = object.value;
     });
-    console.log(data);
+    console.log('Serialized data', data);
 
-    //console.log(JSON.stringify(data));
-    const simulationId = $(this.event.target).parents('.form-group').data('simulationId');
+    if (simulationId === undefined) {
+        console.error('Couldn\'t find simulationId value.');
+        return;
+    }
+
     $.ajax({
         url: '/simulation-forms/edit/' + simulationId,
         method: 'post',
