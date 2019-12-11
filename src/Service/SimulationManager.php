@@ -102,6 +102,7 @@ class SimulationManager
         $this->requestCriteria = [
             'category'  => $category,
             'token'     => $token,
+            'active'    => true,
         ];
 
         if (!empty($request->getContent())) {
