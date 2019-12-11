@@ -5,6 +5,7 @@ require('../css/forms.scss');
 const $ = require('jquery');
 const InfiniteScroll = require('infinite-scroll');
 
+//@FIXME When there is only one block, it keeps making new ajax request infinitely.
 const infScroll = new InfiniteScroll('#forms-content', {
     path: '.pagination__next',
     responseType: 'document',
