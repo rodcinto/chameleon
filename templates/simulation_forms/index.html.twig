@@ -95,18 +95,20 @@
     </div>
 {% endfor %}
 {% if is_page is defined %}
-    <a class="pagination__next" href="">Next</a>
     <div class="scroller-status">
-        <div class="infinite-scroll-request">
-            <div class="d-flex justify-content-center">
-                <div class="spinner-border" role="status">
-                    <span class="sr-only">Loading...</span>
+        {% if forms is empty %}
+            <p class="infinite-scroll-last">End of content</p>
+            <p class="infinite-scroll-error">No more pages to load</p>
+        {% else %}
+            <a class="pagination__next" href="">Next</a>
+            <div class="infinite-scroll-request">
+                <div class="d-flex justify-content-center">
+                    <div class="spinner-border" role="status">
+                        <span class="sr-only">Loading...</span>
+                    </div>
                 </div>
             </div>
-        </div>
+        {% endif %}
     </div>
-    {% if forms is empty %}
-        <p class="infinite-scroll-last">End of content</p>
-    {% endif %}
 {% endif %}
 

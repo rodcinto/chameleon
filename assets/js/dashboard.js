@@ -5,12 +5,11 @@ require('../css/forms.scss');
 const $ = require('jquery');
 const InfiniteScroll = require('infinite-scroll');
 
-//@FIXME When there is only one block, it keeps making new ajax request infinitely.
 const infScroll = new InfiniteScroll('#forms-content', {
     path: '.pagination__next',
     responseType: 'document',
     checkLastPage: true,
-    status: '.page-load-status',
+    status: '.scroller-status',
     history: false,
     prefill: true,
     append: '.form-group',
@@ -19,6 +18,9 @@ const infScroll = new InfiniteScroll('#forms-content', {
 });
 infScroll.on( 'append', ( event, response, path, items ) => {
     $('.preloader-new-content').hide();
+});
+infScroll.on( 'last.infiniteScroll', function( event, response, path ) {
+    console.log( 'LAST Loaded: ' + path );
 });
 
 const getCurrentTime = function() {
