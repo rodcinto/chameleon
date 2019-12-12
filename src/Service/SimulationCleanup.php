@@ -33,7 +33,7 @@ class SimulationCleanup
      */
     public function cleanup()
     {
-        $simulations = $this->repository->findAll();
+        $simulations = $this->repository->findAllWithTTL();
 
         $numberOfDeleted = 0;
 

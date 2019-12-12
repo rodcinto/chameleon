@@ -74,7 +74,8 @@ class SimulationType extends AbstractType
             ->add('ttl', NumberType::class, [
                 'required' => true,
                 'empty_data' => 15,
-                'label' => 'TTL (min)',
+                'label' => 'TTL (minutes)',
+                'help' => 'Set 0 (zero) to keep forever.',
             ])
             ->add('active', CheckboxType::class, [
                 'label'    => 'Simulation is active',

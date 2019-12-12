@@ -104,4 +104,16 @@ class SimulationRepository extends ServiceEntityRepository
 
         return $paginator;
     }
+
+    /**
+     * @return Simulation[]
+     */
+    public function findAllWithTTL()
+    {
+        return $this->createQueryBuilder('s')
+            ->where('s.ttl > :val')
+            ->setParameter('val', 0)
+            ->getQuery()
+            ->getResult();
+    }
 }
