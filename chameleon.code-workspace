@@ -15,9 +15,9 @@
             "**/vendor/**": true
         },
         "search.exclude": {
-            "**/bin": true,
-            "**/var": true,
-            "**/vendor": true
+            "**/bin/**": true,
+            "**/var/**": true,
+            "**/vendor/**": true
         }
     }
 }
