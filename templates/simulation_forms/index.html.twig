@@ -7,21 +7,24 @@
                 <hr>
             </div>
         </div>
+        <div class="my-custom-class-for-errors">
+            {{ form_errors(formInfo.form) }}
+        </div>
         <div class="form-row mb-4">
             <div class="col">
+                {{ form_errors(formInfo.form.alias) }}
+                {{ form_widget(formInfo.form.alias, {'attr': {'placeholder': 'Alias'} }) }}
+            </div>
+            <div class="col-sm-2">
                 <em>
                     {{ form_label(formInfo.form.active) }}
                     {{ form_widget(formInfo.form.active) }}
                 </em>
-
-                <div>
-                    <em>Created at</em>: {{ formInfo.simulation_created|date('d/m/Y H:i:s') }},
-                    <em>Updated at</em>: {{ formInfo.simulation_updated|date('d/m/Y H:i:s') }}
-                </div>
             </div>
-        </div>
-        <div class="my-custom-class-for-errors">
-            {{ form_errors(formInfo.form) }}
+            <div class="col">
+                <em>Created at</em>: {{ formInfo.simulation_created|date('d/m/Y H:i:s') }},
+                <em>Updated at</em>: {{ formInfo.simulation_updated|date('d/m/Y H:i:s') }}
+            </div>
         </div>
         <div class="form-row mb-4">
             <div class="col">

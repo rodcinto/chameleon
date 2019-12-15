@@ -22,6 +22,9 @@ class SimulationType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
+            ->add('alias', TextType::class, [
+                'required' => false
+            ])
             ->add('category', TextType::class, [
                 'required' => true
             ])

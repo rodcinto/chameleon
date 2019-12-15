@@ -98,6 +98,10 @@ class SimulationFormsController extends AbstractController
      */
     public function edit(Request $request, Simulation $simulation)
     {
+        if (!$request->isXmlHttpRequest()) {
+            return new Response('', Response::HTTP_BAD_REQUEST);
+        }
+
         $form = $this->createForm(SimulationType::class, $simulation);
 
         if ($request->isMethod('POST')) {
@@ -123,7 +127,7 @@ class SimulationFormsController extends AbstractController
      */
     public function delete(Request $request, Simulation $simulation)
     {
-        if ($request->isMethod('POST')) {
+        if ($request->isXmlHttpRequest() && $request->isMethod('POST')) {
             $entityManager = $this->getDoctrine()->getManager();
             try {
                 $entityManager->remove($simulation);
