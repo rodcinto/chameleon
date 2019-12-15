@@ -38,4 +38,12 @@ body.dashboard {
   .help-text {
     font-size: small;
   }
+
+  .preloader {
+    left: 56%;
+    top: 50%;
+    display: block;
+    position: fixed;
+    z-index: 100;
+  }
 }
