@@ -7,6 +7,7 @@
 {% set currentPage = 'dashboard' %}
 
 {% block body %}
+    <div class="no-results-message d-none">No simulations at the moment.</div>
     <div class="preloader preloader-new-content">
         <div class="d-flex justify-content-center">
             <div class="spinner-border" role="status">
@@ -22,6 +23,7 @@
             </div>
         </div>
     </div>
+    <div id="messages" class="messages-container fixed-top rounded border-2 text-center"></div>
 {% endblock %}
 
 {% block javascripts %}

@@ -4,6 +4,7 @@ require('../css/forms.scss');
 
 const $ = require('jquery');
 const InfiniteScroll = require('infinite-scroll');
+const Message = require('./Message.js');
 
 const infScroll = new InfiniteScroll('#forms-content', {
     path: '.pagination__next',
@@ -83,5 +84,6 @@ window.deleteSimulation = function(simulationId) {
             $('.simulation-form-' + simulationId).remove();
         }
         $('.preloader-new-content').hide();
+        new Message().flash('Simulation deleted.', 'success');
     });
 }
