@@ -1,8 +1,5 @@
 <?php
-
-
 namespace App\Service;
-
 
 use App\Entity\Simulation;
 use DateInterval;
@@ -37,7 +34,7 @@ class SimulationCleanup
 
         $numberOfDeleted = 0;
 
-        foreach($simulations as $simulation) {
+        foreach ($simulations as $simulation) {
             if ($this->checkSimulationExpired($simulation)) {
                 $this->entityManager->remove($simulation);
                 $numberOfDeleted++;
