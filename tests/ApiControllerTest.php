@@ -6,7 +6,7 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class ApiControllerTest extends WebTestCase
 {
-    const NEW_REQUEST_MESSAGE = 'New request saved in the database.';
+    const NEW_REQUEST_MESSAGE = 'New request saved. It will be loaded next time.';
     const REQUEST_FOUND_MESSAGE = 'Request found, but no response set yet.';
 
     /**

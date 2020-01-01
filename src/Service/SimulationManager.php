@@ -227,7 +227,7 @@ class SimulationManager
      */
     private function filterBestResult(array $simulations)
     {
-        $filtered = array_filter($simulations, function(Simulation $simCandidate) {
+        $filtered = array_filter($simulations, function (Simulation $simCandidate) {
             $similarity = 0;
 
             similar_text($simCandidate->getRequestBodyContent(), $this->requestBody, $similarity);

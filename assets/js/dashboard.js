@@ -22,6 +22,7 @@ infScroll.on( 'append', ( event, response, path, items ) => {
 });
 infScroll.on( 'last.infiniteScroll', function( event, response, path ) {
     console.log( 'LAST Loaded: ' + path );
+    new Message().flash('Last results.', 'secondary');
 });
 
 const getCurrentTime = function() {
@@ -60,12 +61,16 @@ window.simulationSubmit = function(simulationId) {
         return;
     }
 
+    $('.preloader-new-content').show();
+
     $.ajax({
         url: '/simulation-forms/edit/' + simulationId,
         method: 'post',
         dataType: 'json',
         data: data
     }).done((data) => {
+        $('.preloader-new-content').hide();
+        new Message().flash('Simulation updated.', 'success');
         console.log('Saved data response', data);
     });
 }
@@ -84,6 +89,6 @@ window.deleteSimulation = function(simulationId) {
             $('.simulation-form-' + simulationId).remove();
         }
         $('.preloader-new-content').hide();
-        new Message().flash('Simulation deleted.', 'success');
+        new Message().flash('Simulation deleted.', 'info');
     });
 }
