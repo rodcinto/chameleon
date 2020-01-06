@@ -86,7 +86,7 @@ class SimulationType extends AbstractType
             ])
             ->add('save', SubmitType::class, [
                 'attr' => [
-                    'class' => 'btn-save-simulation btn-primary'
+                    'class' => 'btn btn-save-simulation btn-primary'
                 ],
             ]);
     }

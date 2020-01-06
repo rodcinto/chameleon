@@ -30,7 +30,7 @@ class SimulationFixtures extends Fixture
                 ->setHttpVerb($this->getRandomFrom($this->HTTPVerbs))
                 ->setActive($this->getRandomFrom($this->active))
                 ->setRequestBodyContent($this->randomText())
-                ->setTtl(rand(10, 20))
+                ->setTtl(0)
                 ->setResponseCode($this->getRandomFrom($this->responseCodes))
                 ->setResponseBodyContent($this->randomText())
                 ->setCreated($this->randomDate());

@@ -1,5 +1,5 @@
 {% for formInfo in forms %}
-    <div class="simulation form-group simulation-form-{{ formInfo.simulation_id }}">
+    <div class="jumbotron round simulation form-group simulation-form-{{ formInfo.simulation_id }}">
     {{ form_start(formInfo.form, {'attr': {'onsubmit': 'return simulationSubmit(' ~ formInfo.simulation_id ~ ');'}}) }}
         <div class="form-row mb-4">
             <div class="col">
@@ -91,7 +91,7 @@
             <div class="col actions">
                 {{ form_row(formInfo.form.save, { 'label': 'Save' }) }}
                 <div>
-                    <button type="button" class="btn-delete btn-secondary" onclick="deleteSimulation({{ formInfo.simulation_id }})">Delete</button>
+                    <button type="button" class="btn btn-delete btn-secondary" onclick="deleteSimulation({{ formInfo.simulation_id }})">Delete</button>
                 </div>
             </div>
         </div>
