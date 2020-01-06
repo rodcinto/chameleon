@@ -75,13 +75,56 @@ class SimulationRepository extends ServiceEntityRepository
      * @param integer $currentPage
      * @return Paginator|void
      */
-    public function findAllByPage(int $currentPage = 1)
+    public function findAllByPage(int $currentPage = 1, $searchTerms = [])
     {
-        $query = $this->createQueryBuilder('s')
-            ->orderBy('s.created', 'DESC')
-            ->getQuery();
+        $queryBuilder = $this->createQueryBuilder('s');
 
-        $paginatedResult = $this->paginate($query, $currentPage, self::MAX_RESULTS);
+        if ([] !== $searchTerms) {
+            if (isset($searchTerms['alias'])) {
+                $queryBuilder->andWhere(
+                    $queryBuilder->expr()->like('s.alias',
+                        $queryBuilder->expr()->literal('%' . $searchTerms['alias'] . '%')
+                    )
+                );
+            }
+            if (isset($searchTerms['category'])) {
+                // Break it.
+                $categories = explode(',', $searchTerms['category']);
+
+                // Clean it.
+                $categories = array_map(function($term) {
+                    return trim($term);
+                }, $categories);
+
+                // Glue it back.
+                $queryBuilder->andWhere(
+                    $queryBuilder->expr()->in('s.category', $categories)
+                );
+            }
+
+            if (isset($searchTerms['token'])) {
+                // Break it.
+                $tokens = explode(',', $searchTerms['token']);
+
+                // Clean it.
+                $tokens = array_map(function($term) {
+                    return trim($term);
+                }, $tokens);
+
+                // Glue it back.
+                $queryBuilder->andWhere(
+                    $queryBuilder->expr()->in('s.token', $tokens)
+                );
+            }
+        }
+
+        $queryBuilder->orderBy('s.created', 'DESC');
+
+        $paginatedResult = $this->paginate(
+            $queryBuilder->getQuery(),
+            $currentPage,
+            self::MAX_RESULTS
+        );
 
         return $paginatedResult;
     }

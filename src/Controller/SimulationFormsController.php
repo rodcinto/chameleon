@@ -35,9 +35,9 @@ class SimulationFormsController extends AbstractController
      * @param integer $page
      * @return Response
      */
-    public function index(int $page)
+    public function index(Request $request, int $page)
     {
-        $simulationsByPage = $this->repository->findAllByPage($page);
+        $simulationsByPage = $this->repository->findAllByPage($page, $this->parseSearchTermsFromRequest($request));
 
         $forms = $this->populateForms($simulationsByPage);
 
@@ -140,5 +140,18 @@ class SimulationFormsController extends AbstractController
         }
 
         return new Response('', Response::HTTP_BAD_REQUEST);
+    }
+
+    /**
+     * @param Request $request
+     * @return array
+     */
+    private function parseSearchTermsFromRequest(Request $request)
+    {
+        return [
+            'alias'    => $request->query->get('alias'),
+            'token'    => $request->query->get('token'),
+            'category' => $request->query->get('category'),
+        ];
     }
 }

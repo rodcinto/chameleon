@@ -7,6 +7,26 @@
 {% set currentPage = 'dashboard' %}
 
 {% block body %}
+    <div class="container">
+        <fieldset class="m-2">
+            <form method="GET">
+                <legend>Filters</legend>
+                <div class="form-group">
+                    <label for="alias-search">Alias</label>
+                    <input type="text" class="form-control" id="alias-search" name="alias" placeholder="" value="{{search_terms.alias}}">
+                </div>
+                <div class="form-group">
+                    <label for="category-search">Category</label>
+                    <input type="text" class="form-control" id="category-search" name="category" placeholder="Comma separated" value="{{search_terms.category}}">
+                </div>
+                <div class="form-group">
+                    <label for="token-search">Token</label>
+                    <input type="text" class="form-control" id="token-search" name="token" placeholder="Comma separated"  value="{{search_terms.token}}">
+                </div>
+                <button type="submit" class="btn btn-primary btn-search">Search</button>
+            </form>
+        </fieldset>
+    </div>
     <div class="no-results-message d-none">No simulations at the moment.</div>
     <div class="preloader preloader-new-content">
         <div class="d-flex justify-content-center">
@@ -19,7 +39,7 @@
         <div class="content" id="forms-content">
             <div class="pagination d-none">
                 <span class="pagination__current">Page 1</span>
-                <a class="pagination__next" href="/simulation-forms/page/1">Next</a>
+                <a class="pagination__next" href="/simulation-forms/page/1{{ search_string }}">Next</a>
             </div>
         </div>
     </div>
