@@ -2,5 +2,14 @@
 {% set currentPage = 'home' %}
 {% block title %}Home{% endblock %}
 {% block body %}
-    Index content!!!
+    <h2>Welcome to the Chameleon Fake API Server</h2>
+    <p>This server will receive a request, and will shape its response acordingly to any desired response.</p>
+
+    <h3>How it works</h3>
+    <ol>
+        <li>Point your application to this server.</li>
+        <li>Execute your application. The first request will fail, but it will be saved here.</li>
+        <li>Open the <a href="/dashboard">Dashboard</a>, and customize your response.</li>
+        <li>Run your application again and receive your customized response.</li>
+    </ol>
 {% endblock %}
