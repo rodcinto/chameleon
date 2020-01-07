@@ -19,6 +19,8 @@ composer install
 bin/console doctrine:database:create
 bin/console doctrine:schema:create
 ```
+To compile the assets, specify one between dev and production:
+``` yarn encore [dev/production]```
 ___
 ## Running the server
 Via Docker stack or Symfony local server:
