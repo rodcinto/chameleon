@@ -1,7 +1,9 @@
 # Chameleon Fake API Server
 Welcome to the Chameleon Fake API Server.
 
-This server will receive a request, and will shape its response acordingly to any desired response.
+Inspired by the project "mock-server.com",  this server will receive a request, and will shape its response acordingly to any desired response, in a very simple way.
+
+![Screenshot](https://github.com/rodcinto/chameleon/blob/master/screenshot.png)
 
 ___
 ## Configuring the Database
