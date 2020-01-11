@@ -32,6 +32,12 @@ simulation_forms_delete:
   requirements:
     simulation: '\d+'
 
+simulation_forms_export:
+  path: /simulation-forms/export/{simulation}
+  controller: App\Controller\SimulationFormsController::export
+  requirements:
+    simulation: '\d+'
+
 api:
   path: /api/{category?}/{token}
   controller: App\Controller\ApiController::index

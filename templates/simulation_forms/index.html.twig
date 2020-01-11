@@ -91,7 +91,10 @@
             <div class="col actions">
                 {{ form_row(formInfo.form.save, { 'label': 'Save' }) }}
                 <div>
-                    <button type="button" class="btn btn-delete btn-secondary" onclick="deleteSimulation({{ formInfo.simulation_id }})">Delete</button>
+                    {{ form_widget(formInfo.form.export, {'attr': {'onclick': 'exportSimulation(' ~ formInfo.simulation_id ~ ')'} }) }}
+                </div>
+                <div>
+                    {{ form_widget(formInfo.form.delete, {'attr': {'onclick': 'deleteSimulation(' ~ formInfo.simulation_id ~ ')'} }) }}
                 </div>
             </div>
         </div>

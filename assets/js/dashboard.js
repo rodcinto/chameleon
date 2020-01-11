@@ -92,3 +92,35 @@ window.deleteSimulation = function(simulationId) {
         new Message().flash('Simulation deleted.', 'info');
     });
 }
+
+window.exportSimulation = function(simulationId) {
+    // @TODO This function is sloppy.
+    console.log('SimulationId export: ' + simulationId);
+    $('.preloader-new-content').show();
+
+    $.ajax({
+        url: '/simulation-forms/export/' + simulationId,
+    }).done((data, textStatus, xhr) => {
+        if (xhr.status === 200 && data !== '') {
+            var textArea = document.createElement("textarea");
+            textArea.value = data;
+            textArea.style.position="fixed";
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+
+            var copied = document.execCommand('copy');
+
+            if (copied) {
+                console.log('Copied', data);
+                new Message().flash('Entry #' + simulationId + ' copied into your Clipboard (CTRL+C).', 'info');
+            } else {
+                new Message().flash('Sorry, an error occurred.', 'danger');
+            }
+        }
+        $('.preloader-new-content').hide();
+    }).fail(() => {
+        $('.preloader-new-content').hide();
+        new Message().flash('Sorry, an error occurred', 'danger');
+    });
+}

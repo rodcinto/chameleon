@@ -11,6 +11,7 @@ use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Extension\Core\Type\ButtonType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class SimulationType extends AbstractType
@@ -87,6 +88,16 @@ class SimulationType extends AbstractType
             ->add('save', SubmitType::class, [
                 'attr' => [
                     'class' => 'btn btn-save-simulation btn-primary'
+                ],
+            ])
+            ->add('export', ButtonType::class, [
+                'attr' => [
+                    'class' => 'btn btn-export-simulation btn-secondary'
+                ],
+            ])
+            ->add('delete', ButtonType::class, [
+                'attr' => [
+                    'class' => 'btn btn-delete btn-danger',
                 ],
             ]);
     }

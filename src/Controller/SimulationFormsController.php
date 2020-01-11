@@ -10,6 +10,7 @@ use App\Form\SimulationType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use App\Service\SimulationExporter;
 
 class SimulationFormsController extends AbstractController
 {
@@ -153,5 +154,26 @@ class SimulationFormsController extends AbstractController
             'token'    => $request->query->get('token'),
             'category' => $request->query->get('category'),
         ];
+    }
+
+    /**
+     * @param Request $request
+     * @param Simulation $simulation
+     * @return Response
+     */
+    public function export(Request $request, Simulation $simulation)
+    {
+        if (!$request->isXmlHttpRequest()) {
+            return new Response('', Response::HTTP_BAD_REQUEST);
+        }
+
+        $simulationExporter = new SimulationExporter($simulation);
+
+        try {
+            return new Response($simulationExporter->exportToJson(), Response::HTTP_OK);
+        } catch(RuntimeException $e) {
+            $this->logger->error('Error on Simulation Export', [$e->getMessage()]);
+            return new Response('', Response::HTTP_NO_CONTENT);
+        }
     }
 }
