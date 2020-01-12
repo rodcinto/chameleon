@@ -37,14 +37,13 @@ class SimulationExporterTest extends TestCase
             'httpVerb' => 'POST',
             'parameters' => 'array ( \'email\' => \'my@email.com\',  \'a\' => \'2\',)',
             'requestBodyContent' => 'Request Body Content',
-            'responseBodyContent' => NULL,
             'responseContentType' => 'text',
             'responseCode' => 200,
             'responseDelay' => 3,
             'queryString' => 'somevar=hello',
             'alias' => 'Simulation Exported',
         ];
-        
+
         $this->assertEquals($expectedData, $exportedJson);
     }
 }

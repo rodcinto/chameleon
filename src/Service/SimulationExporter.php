@@ -2,6 +2,7 @@
 namespace App\Service;
 
 use App\Entity\Simulation;
+use Symfony\Component\Serializer\Normalizer\AbstractObjectNormalizer;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
@@ -9,7 +10,7 @@ use Symfony\Component\Serializer\Serializer;
 
 class SimulationExporter
 {
-    const SERIALIZE_JSON = 'json';
+    const SERIALIZE_FORMAT = 'json';
 
     /**
      * @var Simulation
@@ -36,8 +37,11 @@ class SimulationExporter
 
         return $serializer->serialize(
             $this->simulation,
-            self::SERIALIZE_JSON,
-            [AbstractNormalizer::IGNORED_ATTRIBUTES => $this->ignoredAttributes]
+            self::SERIALIZE_FORMAT,
+            [
+                AbstractObjectNormalizer::SKIP_NULL_VALUES  => true,
+                AbstractNormalizer::IGNORED_ATTRIBUTES      => $this->ignoredAttributes,
+            ]
         );
     }
 
