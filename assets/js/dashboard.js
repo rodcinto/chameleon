@@ -126,16 +126,22 @@ window.exportSimulation = function(simulationId) {
 }
 
 $('.btn-import-save').click(function() {
-    var $importData = $('#import_data');
+    var importData = $('#import_data').val();
+
+    if ('' === importData) {
+        return;
+    }
+
+    //@TODO Validate data with JSON.parse()
 
     $('.preloader-new-content').show();
     $('#modal_import').modal('hide');
 
     $.ajax({
-        url: '/simulation-forms/import',
+        url: '/simulation-forms/import/',
         method: 'post',
         data: {
-            import_data: $importData.val()
+            import_data: importData
         }
     }).done(function(data, textStatus, xhr) {
         if (xhr.status === 200) {
@@ -148,6 +154,6 @@ $('.btn-import-save').click(function() {
         new Message().flash('Sorry, an error occurred', 'danger');
     }).always(() => {
         $('.preloader-new-content').hide();
-        $importData.val('');
+        $('#import_data').val('');
     });
 });
