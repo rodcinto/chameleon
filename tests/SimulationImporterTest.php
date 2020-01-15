@@ -16,5 +16,6 @@ class SimulationImporterTest extends TestCase
         $simulation = $simulationImporter->loadSimulation();
 
         $this->assertInstanceOf(Simulation::class, $simulation);
+        $this->assertEquals('Cute Alias', $simulation->getAlias());
     }
 }

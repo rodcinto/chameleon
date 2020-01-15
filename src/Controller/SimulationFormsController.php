@@ -11,6 +11,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Service\SimulationExporter;
+use App\Service\SimulationImporter;
 
 class SimulationFormsController extends AbstractController
 {
@@ -100,7 +101,7 @@ class SimulationFormsController extends AbstractController
     public function edit(Request $request, Simulation $simulation)
     {
         if (!$request->isXmlHttpRequest()) {
-            return new Response('', Response::HTTP_BAD_REQUEST);
+            return new Response(null, Response::HTTP_BAD_REQUEST);
         }
 
         $form = $this->createForm(SimulationType::class, $simulation);
@@ -128,19 +129,21 @@ class SimulationFormsController extends AbstractController
      */
     public function delete(Request $request, Simulation $simulation)
     {
-        if ($request->isXmlHttpRequest() && $request->isMethod('POST')) {
-            $entityManager = $this->getDoctrine()->getManager();
-            try {
-                $entityManager->remove($simulation);
-                $entityManager->flush();
-
-                return new Response('', Response::HTTP_OK);
-            } catch (Exception $e) {
-                $this->logger->error('Error deleting Simulation', [$e->getMessage()]);
-            }
+        if (!$request->isXmlHttpRequest()) {
+            return new Response(null, Response::HTTP_METHOD_NOT_ALLOWED);
         }
 
-        return new Response('', Response::HTTP_BAD_REQUEST);
+        $entityManager = $this->getDoctrine()->getManager();
+        try {
+            $entityManager->remove($simulation);
+            $entityManager->flush();
+
+            return new Response(null, Response::HTTP_OK);
+        } catch (Exception $e) {
+            $this->logger->error('Error deleting Simulation', [$e->getMessage()]);
+        }
+
+        return new Response(null, Response::HTTP_BAD_REQUEST);
     }
 
     /**
@@ -164,7 +167,7 @@ class SimulationFormsController extends AbstractController
     public function export(Request $request, Simulation $simulation)
     {
         if (!$request->isXmlHttpRequest()) {
-            return new Response('', Response::HTTP_BAD_REQUEST);
+            return new Response(null, Response::HTTP_METHOD_NOT_ALLOWED);
         }
 
         $simulationExporter = new SimulationExporter($simulation);
@@ -173,7 +176,39 @@ class SimulationFormsController extends AbstractController
             return new Response($simulationExporter->exportToJson(), Response::HTTP_OK);
         } catch(RuntimeException $e) {
             $this->logger->error('Error on Simulation Export', [$e->getMessage()]);
-            return new Response('', Response::HTTP_NO_CONTENT);
+            return new Response(null, Response::HTTP_NO_CONTENT);
         }
+    }
+
+    /**
+     * @param Request $request
+     * @return Response
+     */
+    public function import(Request $request)
+    {
+        if (!$request->isXmlHttpRequest()) {
+            return new Response(null, Response::HTTP_METHOD_NOT_ALLOWED);
+        }
+
+        $simulationString = $request->request->get('import_data');
+
+        if (empty($simulationString)) {
+            return new Response(null, Response::HTTP_BAD_REQUEST);
+        }
+
+        $simulationImporter = new SimulationImporter($simulationString);
+
+        $simulation = $simulationImporter->loadSimulation();
+
+        $entityManager = $this->getDoctrine()->getManager();
+        try {
+            $entityManager->persist($simulation);
+            $entityManager->flush();
+            return new Response(null, Response::HTTP_OK);
+        } catch(RuntimeException $e) {
+            $this->logger->error('Error importing Simulation', [$e->getMessage()]);
+        }
+
+        return new Response(null, Response::HTTP_BAD_REQUEST);
     }
 }

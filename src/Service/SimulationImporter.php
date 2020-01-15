@@ -31,7 +31,7 @@ class SimulationImporter
             Simulation::class,
             self::SERIALIZE_FORMAT,
             [
-                AbstractNormalizer::OBJECT_TO_POPULATE      => $simulation,
+                AbstractNormalizer::OBJECT_TO_POPULATE => $simulation,
             ]
         );
 

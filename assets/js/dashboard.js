@@ -124,3 +124,29 @@ window.exportSimulation = function(simulationId) {
         new Message().flash('Sorry, an error occurred', 'danger');
     });
 }
+
+$('.btn-import-save').click(function() {
+    var data = $('#import_data').val();
+
+    $('.preloader-new-content').show();
+    $('#modal_import').modal('hide');
+
+    $.ajax({
+        url: '/simulation-forms/import',
+        method: 'post',
+        data: {
+            import_data: data
+        }
+    }).done(function(data, textStatus, xhr) {
+        if (xhr.status === 200) {
+            console.log('IMPORT SUCCESS');
+            new Message().flash('New Entry imported. Make sure your filters are OK.', 'info');
+        } else {
+            new Message().flash('Sorry, couldn\'t import it.', 'warning');
+        }
+    }).fail(() => {
+        new Message().flash('Sorry, an error occurred', 'danger');
+    }).always(() => {
+        $('.preloader-new-content').hide();
+    });
+});

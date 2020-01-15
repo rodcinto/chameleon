@@ -1,10 +1,12 @@
 index:
    path: /
    controller: App\Controller\DefaultController::index
+   methods:    GET
 
 dashboard:
   path: /dashboard
   controller: App\Controller\DashboardController::index
+  methods:    GET
 
 simulation_forms_page:
   path: /simulation-forms/page/{page}
@@ -13,6 +15,7 @@ simulation_forms_page:
     page: '\d+'
   defaults:
     page: 1
+  methods: GET
 
 simulation_forms_fresh:
   path: /simulation-forms/fresh/{lastTime}
@@ -21,22 +24,31 @@ simulation_forms_fresh:
     lastTime: '\d+'
   defaults:
     lastTime: 0
+  methods: GET
 
 simulation_forms_edit:
   path: /simulation-forms/edit/{simulation}
   controller: App\Controller\SimulationFormsController::edit
+  methods: POST
 
 simulation_forms_delete:
   path: /simulation-forms/delete/{simulation}
   controller: App\Controller\SimulationFormsController::delete
   requirements:
     simulation: '\d+'
+  methods: POST
 
 simulation_forms_export:
   path: /simulation-forms/export/{simulation}
   controller: App\Controller\SimulationFormsController::export
   requirements:
     simulation: '\d+'
+  methods: GET
+
+simulation_forms_import:
+  path: /simulation-forms/import/
+  controller: App\Controller\SimulationFormsController::import
+  methods: POST
 
 api:
   path: /api/{category?}/{token}
