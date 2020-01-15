@@ -126,7 +126,7 @@ window.exportSimulation = function(simulationId) {
 }
 
 $('.btn-import-save').click(function() {
-    var data = $('#import_data').val();
+    var $importData = $('#import_data');
 
     $('.preloader-new-content').show();
     $('#modal_import').modal('hide');
@@ -135,7 +135,7 @@ $('.btn-import-save').click(function() {
         url: '/simulation-forms/import',
         method: 'post',
         data: {
-            import_data: data
+            import_data: $importData.val()
         }
     }).done(function(data, textStatus, xhr) {
         if (xhr.status === 200) {
@@ -148,5 +148,6 @@ $('.btn-import-save').click(function() {
         new Message().flash('Sorry, an error occurred', 'danger');
     }).always(() => {
         $('.preloader-new-content').hide();
+        $importData.val('');
     });
 });

@@ -82,7 +82,7 @@ class SimulationType extends AbstractType
                 'help' => 'Set 0 (zero) to keep forever.',
             ])
             ->add('active', CheckboxType::class, [
-                'label'    => 'Simulation is active',
+                'label'    => 'Active',
                 'required' => false,
             ])
             ->add('save', SubmitType::class, [
