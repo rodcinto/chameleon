@@ -137,7 +137,7 @@ class Simulation
         return $this->parameters;
     }
 
-    public function setParameters(string $parameters): self
+    public function setParameters(?string $parameters): self
     {
         $this->parameters = $parameters;
 
@@ -149,7 +149,7 @@ class Simulation
         return $this->request_body_content;
     }
 
-    public function setRequestBodyContent(string $request_body_content): self
+    public function setRequestBodyContent(?string $request_body_content): self
     {
         $this->request_body_content = $request_body_content;
 
@@ -161,7 +161,7 @@ class Simulation
         return $this->response_body_content;
     }
 
-    public function setResponseBodyContent(string $response_body_content): self
+    public function setResponseBodyContent(?string $response_body_content): self
     {
         $this->response_body_content = $response_body_content;
 
@@ -173,7 +173,7 @@ class Simulation
         return $this->response_content_type;
     }
 
-    public function setResponseContentType(string $response_content_type): self
+    public function setResponseContentType(?string $response_content_type): self
     {
         $this->response_content_type = $response_content_type;
 
