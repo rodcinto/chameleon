@@ -5,24 +5,24 @@ namespace App\Controller;
 use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
-use App\Service\SimulationManager;
+use App\Service\SimulationAPIManager;
 use Symfony\Component\HttpFoundation\Response;
 
 class ApiController extends AbstractController
 {
     /**
-     * @var SimulationManager
+     * @var SimulationAPIManager
      */
-    private $simulationManager;
+    private $simulationAPIManager;
 
     /**
      * Constructor.
      *
-     * @param SimulationManager $simulationManager
+     * @param SimulationAPIManager $simulationAPIManager
      */
-    public function __construct(SimulationManager $simulationManager)
+    public function __construct(SimulationAPIManager $simulationAPIManager)
     {
-        $this->simulationManager = $simulationManager;
+        $this->simulationAPIManager = $simulationAPIManager;
     }
 
     /**
@@ -34,8 +34,8 @@ class ApiController extends AbstractController
      */
     public function index(Request $request, string $category, string $token)
     {
-        $this->simulationManager->createRequestCriteria($request, $category, $token);
+        $this->simulationAPIManager->createRequestCriteria($request, $category, $token);
 
-        return $this->simulationManager->buildResponse();
+        return $this->simulationAPIManager->buildResponse();
     }
 }

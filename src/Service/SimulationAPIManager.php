@@ -9,7 +9,7 @@ use App\Entity\Simulation;
 use Psr\Log\LoggerInterface;
 use Doctrine\ORM\EntityManagerInterface;
 
-class SimulationManager
+class SimulationAPIManager
 {
     const PROXIMITY_PERCENTAGE = 90;
     const NEW_REQUEST_MESSAGE = 'New request saved. It will be loaded next time.';
