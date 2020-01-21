@@ -14,6 +14,7 @@ class SimulationManager
     const PROXIMITY_PERCENTAGE = 90;
     const NEW_REQUEST_MESSAGE = 'New request saved. It will be loaded next time.';
     const REQUEST_FOUND_NO_CONTENT = 'Request found, but no response set yet.';
+    const DEFAULT_TTL = 15;
 
     /**
      * @var LoggerInterface
@@ -141,7 +142,7 @@ class SimulationManager
     private function formatRequestParams($parameters)
     {
         if (!empty($parameters)) {
-            $exportedParameters = var_export($parameters, true);
+            $exportedParameters = json_encode($parameters);
             return trim(str_replace(["\r", "\n"], '', $exportedParameters));
         }
 
@@ -193,7 +194,7 @@ class SimulationManager
         }
 
         $simulation->setActive(true);
-        $simulation->setTtl(15);
+        $simulation->setTtl(self::DEFAULT_TTL);
         $simulation->setResponseDelay(0);
         $simulation->setCreated(new DateTime('now'));
 

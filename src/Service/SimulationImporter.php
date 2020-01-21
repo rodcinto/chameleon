@@ -11,6 +11,7 @@ use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 class SimulationImporter
 {
     const SERIALIZE_FORMAT = 'json';
+    const DEFAULT_TTL = 15;
 
     private $serializedSimulation;
 
@@ -48,7 +49,7 @@ class SimulationImporter
             ->setToken('')
             ->setActive(true)
             ->setResponseDelay(0)
-            ->setTtl(15)
+            ->setTtl(self::DEFAULT_TTL)
             ->setCreated(new DateTime());
 
         return $simulation;
