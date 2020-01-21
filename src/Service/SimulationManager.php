@@ -53,23 +53,28 @@ class SimulationManager
      */
     public function buildResponse()
     {
-        $this->logger->debug('buildResponse');
         $simulations = $this->findSimulationByRequest();
-
-        $this->logger->info('Result', [$simulations]);
 
         $response = new Response();
 
         if (empty($simulations)) {
+            $this->logger->info('Nothing found. Save a new simulation.');
             $this->persistNewSimulation();
             return $response->setContent(self::NEW_REQUEST_MESSAGE);
         }
 
         if (count($simulations) === 1) {
+            $this->logger->info('One Result', [$simulations]);
             $simulation = end($simulations);
         } else {
-            $this->logger->info('Found many candidates:', [$simulations]);
+            $this->logger->info('Found multiple candidates:', [$simulations]);
             $simulation = $this->filterBestResult($simulations);
+        }
+
+        if (!$simulation) {
+            $this->logger->info('No similar simulation found after filter. Save a new one.');
+            $this->persistNewSimulation();
+            return $response->setContent(self::NEW_REQUEST_MESSAGE);
         }
 
         if ($simulation instanceof Simulation && !empty($simulation->getResponseBodyContent())) {
@@ -183,8 +188,8 @@ class SimulationManager
         if (isset($this->requestCriteria['query_string'])) {
             $simulation->setQueryString($this->requestCriteria['query_string']);
         }
-        if (isset($this->requestCriteria['request_body_content'])) {
-            $simulation->setRequestBodyContent($this->requestCriteria['request_body_content']);
+        if (isset($this->requestBody)) {
+            $simulation->setRequestBodyContent($this->requestBody);
         }
 
         $simulation->setActive(true);
@@ -223,7 +228,7 @@ class SimulationManager
 
     /**
      * @param array $simulations
-     * @return Simulation
+     * @return Simulation|null
      */
     private function filterBestResult(array $simulations)
     {
@@ -233,17 +238,19 @@ class SimulationManager
             similar_text($simCandidate->getRequestBodyContent(), $this->requestBody, $similarity);
 
             $this->logger->info('Similarity: ', [
-                'request' => $this->requestBody,
-                'candidate' => $simCandidate->getRequestBodyContent(),
+                'Requested Content' => $this->requestBody,
+                'Candidate found' => $simCandidate->getRequestBodyContent(),
                 'similarity' => $similarity]);
 
             return self::PROXIMITY_PERCENTAGE <= $similarity;
         });
 
+        $this->logger->info('After Filter', [$filtered]);
+
         if (is_array($filtered) && count($filtered) > 0) {
             return end($filtered);
         }
 
-        return $filtered;
+        return null;
     }
 }
