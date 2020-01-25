@@ -11,7 +11,8 @@ use Doctrine\ORM\EntityManagerInterface;
 
 class SimulationAPIManager
 {
-    const PROXIMITY_PERCENTAGE = 90;
+    const REQUEST_BODY_PROXIMITY_FACTOR = 90;
+    const REQUEST_PARAMETERS_PROXIMITY_FACTOR = 90;
     const NEW_REQUEST_MESSAGE = 'New request saved. It will be loaded next time.';
     const REQUEST_FOUND_NO_CONTENT = 'Request found, but no response set yet.';
     const DEFAULT_TTL = 15;
@@ -30,6 +31,11 @@ class SimulationAPIManager
      * @var array
      */
     private $requestCriteria;
+
+    /**
+     * @var string
+     */
+    private $requestParameters;
 
     /**
      * @var string
@@ -111,21 +117,22 @@ class SimulationAPIManager
             'active'    => true,
         ];
 
-        if (!empty($request->getContent())) {
-            $this->requestBody = trim($request->getContent());
-            $this->logger->info('Search request content', [$this->requestBody]);
+        $parameters = $this->formatRequestParams($request->request->all());
+        if ('' !== $parameters) {
+            $this->logger->info('Search request parameters', [$parameters]);
+            $this->requestParameters = $this->minifyText($parameters);
+        }
+
+        $requestBody = $request->getContent();
+        if (!empty($requestBody)) {
+            $this->logger->info('Search request content', [$requestBody]);
+            $this->requestBody = $this->minifyText($requestBody);
         }
 
         $requestMethod = $request->getMethod();
         if (!empty($requestMethod)) {
             $this->requestCriteria['http_verb'] = $requestMethod;
             $this->logger->info('Search request method', [$requestMethod]);
-        }
-
-        $parameters = $this->formatRequestParams($request->request->all());
-        if ('' !== $parameters) {
-            $this->requestCriteria['parameters'] = $parameters;
-            $this->logger->info('Search request parameters', [$parameters]);
         }
 
         $queryString = $this->formatQueryString($request->query->all());
@@ -143,10 +150,19 @@ class SimulationAPIManager
     {
         if (!empty($parameters)) {
             $exportedParameters = json_encode($parameters);
-            return trim(str_replace(["\r", "\n"], '', $exportedParameters));
+            return $this->minifyText($exportedParameters);
         }
 
         return '';
+    }
+
+    /**
+     * @param string $text
+     * @return string
+     */
+    private function minifyText(string $text):string
+    {
+        return trim(str_replace(["\r", "\n"], '', $text));
     }
 
     /**
@@ -183,11 +199,11 @@ class SimulationAPIManager
         if (isset($this->requestCriteria['http_verb'])) {
             $simulation->setHttpVerb($this->requestCriteria['http_verb']);
         }
-        if (isset($this->requestCriteria['parameters'])) {
-            $simulation->setParameters($this->requestCriteria['parameters']);
-        }
         if (isset($this->requestCriteria['query_string'])) {
             $simulation->setQueryString($this->requestCriteria['query_string']);
+        }
+        if (isset($this->requestParameters)) {
+            $simulation->setParameters($this->requestParameters);
         }
         if (isset($this->requestBody)) {
             $simulation->setRequestBodyContent($this->requestBody);
@@ -233,18 +249,7 @@ class SimulationAPIManager
      */
     private function filterBestResult(array $simulations)
     {
-        $filtered = array_filter($simulations, function (Simulation $simCandidate) {
-            $similarity = 0;
-
-            similar_text($simCandidate->getRequestBodyContent(), $this->requestBody, $similarity);
-
-            $this->logger->info('Similarity: ', [
-                'Requested Content' => $this->requestBody,
-                'Candidate found' => $simCandidate->getRequestBodyContent(),
-                'similarity' => $similarity]);
-
-            return self::PROXIMITY_PERCENTAGE <= $similarity;
-        });
+        $filtered = array_filter($simulations, [$this, 'filterByProximity']);
 
         $this->logger->info('After Filter', [$filtered]);
 
@@ -253,5 +258,61 @@ class SimulationAPIManager
         }
 
         return null;
+    }
+
+    /**
+     * @param Simulation $simCandidate
+     * @return bool
+     */
+    private function filterByProximity(Simulation $simCandidate)
+    {
+        $requestParametersSimilarity = $this->compareTexts(
+            $this->minifyText($simCandidate->getParameters() ?: ''),
+            $this->requestParameters ?: '',
+            sprintf('Request Parameters Similarity (%d)', $simCandidate->getId())
+        );
+
+        $bodyContentSimilarity = $this->compareTexts(
+            $this->minifyText($simCandidate->getRequestBodyContent() ?: ''),
+            $this->requestBody ?: '',
+            sprintf('Request Body Similarity (%d)', $simCandidate->getId())
+        );
+
+        return  self::REQUEST_PARAMETERS_PROXIMITY_FACTOR <= $requestParametersSimilarity
+                && self::REQUEST_BODY_PROXIMITY_FACTOR <= $bodyContentSimilarity;
+    }
+
+    /**
+     * @param string $candidateText
+     * @param string $requestText
+     * @param string $logMessage
+     * @return float
+     */
+    private function compareTexts(
+        string $candidateText,
+        string $requestText,
+        string $logMessage
+        ):float
+    {
+        if ('' === $candidateText && '' === $requestText) {
+            $this->logger->info($logMessage . ' - Empty values. Similarity 100%');
+            return 100;
+        }
+
+        $similarity = 0;
+
+        similar_text(
+            $requestText,
+            $candidateText,
+            $similarity
+        );
+
+        $this->logger->info($logMessage, [
+            'Requested Content' => $requestText,
+            'Candidate Found' => $candidateText,
+            'Similarity' => $similarity
+        ]);
+
+        return $similarity;
     }
 }
