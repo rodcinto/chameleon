@@ -13,6 +13,7 @@ class SimulationAPIManager
 {
     const REQUEST_BODY_PROXIMITY_FACTOR = 90;
     const REQUEST_PARAMETERS_PROXIMITY_FACTOR = 90;
+    const AVARAGE_PROXIMITY_FACTOR = 90;
     const NEW_REQUEST_MESSAGE = 'New request saved. It will be loaded next time.';
     const REQUEST_FOUND_NO_CONTENT = 'Request found, but no response set yet.';
     const DEFAULT_TTL = 15;
@@ -249,11 +250,19 @@ class SimulationAPIManager
      */
     private function filterBestResult(array $simulations)
     {
-        $filtered = array_filter($simulations, [$this, 'filterByProximity']);
+        $filtered = [];
 
-        $this->logger->info('After Filter', [$filtered]);
+        foreach ($simulations as $simulationCandidate) {
+            $proximity = $this->calculateProximity();
+            if (self::AVARAGE_PROXIMITY_FACTOR <= $proximity) {
+                $filtered[$proximity] = $simulationCandidate;
+            }
+        }
 
-        if (is_array($filtered) && count($filtered) > 0) {
+        $this->logger->info('After Calculations', [$filtered]);
+
+        if (count($filtered) > 0) {
+            ksort($filtered);
             return end($filtered);
         }
 
@@ -262,9 +271,9 @@ class SimulationAPIManager
 
     /**
      * @param Simulation $simCandidate
-     * @return bool
+     * @return float
      */
-    private function filterByProximity(Simulation $simCandidate)
+    private function calculateProximity(Simulation $simCandidate)
     {
         $requestParametersSimilarity = $this->compareTexts(
             $this->minifyText($simCandidate->getParameters() ?: ''),
@@ -278,8 +287,14 @@ class SimulationAPIManager
             sprintf('Request Body Similarity (%d)', $simCandidate->getId())
         );
 
-        return  self::REQUEST_PARAMETERS_PROXIMITY_FACTOR <= $requestParametersSimilarity
-                && self::REQUEST_BODY_PROXIMITY_FACTOR <= $bodyContentSimilarity;
+        if (
+            self::REQUEST_PARAMETERS_PROXIMITY_FACTOR <= $requestParametersSimilarity
+            && self::REQUEST_BODY_PROXIMITY_FACTOR <= $bodyContentSimilarity
+        ) {
+            return ($requestParametersSimilarity + $bodyContentSimilarity) / 2;
+        }
+
+        return 0;
     }
 
     /**
