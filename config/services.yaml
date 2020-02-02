@@ -25,3 +25,10 @@ services:
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
+
+    app.service.similarity: '@App\Service\Similarity'
+
+    App\Service\Proximity:
+        public: false
+        calls:
+            - ['setSimilarity', ['@app.service.similarity']]

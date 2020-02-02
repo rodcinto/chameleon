@@ -6,6 +6,7 @@ use Exception;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Entity\Simulation;
+use App\Service\Proximity;
 use Psr\Log\LoggerInterface;
 use Doctrine\ORM\EntityManagerInterface;
 
@@ -29,6 +30,11 @@ class SimulationAPIManager
     private $entityManager;
 
     /**
+     * @var Proximity
+     */
+    private $proximity;
+
+    /**
      * @var array
      */
     private $requestCriteria;
@@ -49,9 +55,10 @@ class SimulationAPIManager
      * @param LoggerInterface $logger
      * @param EntityManagerInterface $entityManager
      */
-    public function __construct(LoggerInterface $logger, EntityManagerInterface $entityManager)
+    public function __construct(LoggerInterface $logger, EntityManagerInterface $entityManager, Proximity $proximity)
     {
         $this->logger = $logger;
+        $this->proximity = $proximity;
         $this->entityManager = $entityManager;
     }
 
@@ -245,7 +252,7 @@ class SimulationAPIManager
         $filtered = [];
 
         foreach ($simulations as $simulationCandidate) {
-            $proximity = $this->calculateProximity();
+            $proximity = $this->calculateProximity($simulationCandidate);
             if (self::AVARAGE_PROXIMITY_FACTOR <= $proximity) {
                 $filtered[$proximity] = $simulationCandidate;
             }
@@ -267,59 +274,29 @@ class SimulationAPIManager
      */
     private function calculateProximity(Simulation $simCandidate)
     {
-        $requestParametersSimilarity = $this->compareTexts(
-            $this->minifyText($simCandidate->getParameters() ?: ''),
+        $requestParameters = $this->proximity->addComparison(
+            $simCandidate->getParameters() ?: '',
             $this->requestParameters ?: '',
-            sprintf('Request Parameters Similarity (%d)', $simCandidate->getId())
+            self::REQUEST_PARAMETERS_PROXIMITY_FACTOR
         );
 
-        $bodyContentSimilarity = $this->compareTexts(
-            $this->minifyText($simCandidate->getRequestBodyContent() ?: ''),
+        $requestBody = $this->proximity->addComparison(
+            $simCandidate->getRequestBodyContent() ?: '',
             $this->requestBody ?: '',
-            sprintf('Request Body Similarity (%d)', $simCandidate->getId())
+            self::REQUEST_BODY_PROXIMITY_FACTOR
         );
 
-        if (
-            self::REQUEST_PARAMETERS_PROXIMITY_FACTOR <= $requestParametersSimilarity
-            && self::REQUEST_BODY_PROXIMITY_FACTOR <= $bodyContentSimilarity
-        ) {
-            return ($requestParametersSimilarity + $bodyContentSimilarity) / 2;
-        }
+        $score = $this->proximity->calculateAverageScore();
 
-        return 0;
-    }
-
-    /**
-     * @param string $candidateText
-     * @param string $requestText
-     * @param string $logMessage
-     * @return float
-     */
-    private function compareTexts(
-        string $candidateText,
-        string $requestText,
-        string $logMessage
-        ):float
-    {
-        if ('' === $candidateText && '' === $requestText) {
-            $this->logger->info($logMessage . ' - Empty values. Similarity 100%');
-            return 100;
-        }
-
-        $similarity = 0;
-
-        similar_text(
-            $requestText,
-            $candidateText,
-            $similarity
+        $this->logger->info(
+            sprintf('Comparing Simulation #%d', $simCandidate->getId()),
+            [
+                'RequestParameters' => $requestParameters,
+                'RequestBody' => $requestBody,
+                'Score' => $score,
+            ]
         );
 
-        $this->logger->info($logMessage, [
-            'Requested Content' => $requestText,
-            'Candidate Found' => $candidateText,
-            'Similarity' => $similarity
-        ]);
-
-        return $similarity;
+        return $score;
     }
 }
