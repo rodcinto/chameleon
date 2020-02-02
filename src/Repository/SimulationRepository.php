@@ -35,6 +35,9 @@ class SimulationRepository extends ServiceEntityRepository
     {
         $queryBuilder = $this->createQueryBuilder('s');
         foreach ($criteria as $field => $value) {
+            if (empty($value)) {
+                continue;
+            }
             if ($field === 'parameters') {
                 $queryBuilder->andWhere(sprintf('s.%s LIKE :val_%s', $field, $field))
                     ->setParameter('val_' . $field, $value);
@@ -59,9 +62,12 @@ class SimulationRepository extends ServiceEntityRepository
      */
     public function findFresh(int $lastTime)
     {
+        $date = new DateTime();
+        $date->setTimestamp($lastTime);
+
         return $this->createQueryBuilder('s')
             ->andWhere('s.created > :val')
-            ->setParameter('val', new DateTime('@' . $lastTime))
+            ->setParameter('val', $date)
             ->orderBy('s.created', 'DESC')
             ->setMaxResults(self::MAX_RESULTS)
             ->getQuery()
