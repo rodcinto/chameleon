@@ -172,16 +172,8 @@ class SimulationAPIManager
      */
     private function formatQueryString($parameters)
     {
-        if (empty($parameters)) {
-            return '';
-        }
-
-        $parsed = [];
-        foreach ($parameters as $paramKey => $paramValue) {
-            $parsed[] = $paramKey . '=' . $paramValue;
-        }
-
-        return implode('&', $parsed);
+        $this->logger->info('Parameters', [$parameters]);
+        return http_build_query($parameters);
     }
 
     /**
