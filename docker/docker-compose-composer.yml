@@ -1,0 +1,9 @@
+version: '3.5'
+
+services:
+  composer:
+    container_name: chameleon_composer
+    restart: 'no'
+    image: composer:1.9.3
+    volumes:
+      - ../:/app

@@ -1,0 +1,15 @@
+version: '3.5'
+
+services:
+  web:
+    container_name: chameleon_web
+    image: nginx:latest
+    ports:
+      - "88:80"
+    volumes:
+      - ../:/var/www/project:delegated
+      - ./nginx/site.conf:/etc/nginx/conf.d/site.conf
+    links:
+      - php
+    networks:
+      - chameleon-network

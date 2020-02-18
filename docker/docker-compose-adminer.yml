@@ -1,0 +1,11 @@
+version: '3.5'
+
+services:
+  adminer:
+    container_name: chameleon_adminer
+    image: adminer
+    restart: always
+    ports:
+      - "8080:8080"
+    networks:
+      - chameleon-network

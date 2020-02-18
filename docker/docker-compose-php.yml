@@ -1,0 +1,10 @@
+version: '3.5'
+
+services:
+  php:
+    container_name: chameleon_php
+    build: ./php
+    volumes:
+      - ../:/var/www/project:delegated
+    networks:
+      - chameleon-network

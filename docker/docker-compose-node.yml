@@ -1,0 +1,9 @@
+version: '3.5'
+
+services:
+  node:
+    container_name: chameleon_node
+    restart: 'no'
+    image: node:10
+    volumes:
+      - ../:/usr/src/app
